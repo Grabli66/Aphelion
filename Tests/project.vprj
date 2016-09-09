@@ -1,0 +1,9 @@
+{
+    "Name" : "Tests",        
+    "ProjectType" : "tests",
+    "Source" : ["."],    
+    "OutPath" : "../Bin",
+    "Dependency" : [
+        "path://.."
+    ]
+}

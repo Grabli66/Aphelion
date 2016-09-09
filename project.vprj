@@ -1,0 +1,14 @@
+{
+    "Name" : "Aphelion",
+    "Description" : "Vala IDE ",
+    "Version" : "0.1",
+    "ProjectType" : "app",
+    "Source" : ["./Source"],
+    "Tests" : "./Tests",
+    "OutPath" : "./Bin",
+    "Dependency" : [
+        "lib://gtk+-3.0",
+        "lib://gee-0.8",
+        "lib://gtksourceview-3.0"
+    ]
+}
