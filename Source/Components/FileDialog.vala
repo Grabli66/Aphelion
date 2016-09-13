@@ -1,5 +1,3 @@
-using Gtk;
-
 namespace Aphelion {
     /*
     *   File info and data
@@ -41,53 +39,52 @@ namespace Aphelion {
         public const string OPEN_FILE_NAME = "Open File";
         public const string SAVE_FILE_NAME = "Save File";
 
-
+        /*
+        *   Constructor
+        */
         public FileDialog (string name = DEFAULT_ID) {
-            base (name);                        
-        }        
-
-        /*
-        *   Call when component add
-        */
-        public override void OnEnter () {
-
-        }
-
-        /*
-        *   Call when component leave window
-        */
-        public override void OnLeave () {
-
+            base (name);                                    
         }
 
         /*
         *   Show dialog for open file
         */
-        public TextFileData ShowOpen () {
-            var fileChooser = new FileChooserNative (OPEN_FILE_NAME, MainWindow.GetInstance (),
-                                      FileChooserAction.OPEN, "Open", "Cancel");
+        public TextFileData? ShowOpen () {
+            TextFileData res = null;
 
-            fileChooser.set_transient_for (MainWindow.GetInstance ());
-            if (fileChooser.run () == ResponseType.ACCEPT) {
+            var mainWindow = ComponentManagerHelper.GetMainWindowWidget ();
+
+            var fileChooser = new Gtk.FileChooserDialog (OPEN_FILE_NAME, mainWindow,
+                                      Gtk.FileChooserAction.OPEN, 
+                                      "_Cancel",
+				                      Gtk.ResponseType.CANCEL,
+				                      "_Open",
+				                      Gtk.ResponseType.ACCEPT);
+                                    
+            fileChooser.set_transient_for (mainWindow);
+            if (fileChooser.run () == Gtk.ResponseType.ACCEPT) {
                 var filePath = fileChooser.get_filename ();
+                stderr.printf (filePath);
                 string data;
                 size_t size;
-                FileUtils.get_contents (filePath, out data, out size);
-                return new TextFileData (filePath, data);                    
-            }
-            fileChooser.destroy ();
-            return null;
+                FileUtils.get_contents (filePath, out data, out size);                
+                res = new TextFileData (filePath, data);
+                fileChooser.destroy ();
+            }                        
+            return res;
         }
 
         /*
         *   Show dialog for save file
         */
         public void ShowSave () {
-            var fileChooser = new FileChooserNative (SAVE_FILE_NAME, MainWindow.GetInstance (),
-                                      FileChooserAction.SAVE, "Save", "Cancel");
+            var mainWindow = ComponentManagerHelper.GetMainWindowWidget ();
 
-            fileChooser.set_transient_for (MainWindow.GetInstance ());
-            if (fileChooser.run () == ResponseType.ACCEPT) {
+            var fileChooser = new Gtk.FileChooserDialog (SAVE_FILE_NAME, mainWindow,
+                                      Gtk.FileChooserAction.SAVE, "Save", "Cancel");
+
+            fileChooser.set_transient_for (mainWindow);
+            if (fileChooser.run () == Gtk.ResponseType.ACCEPT) {
                 var fileName = fileChooser.get_filename ();                    
             }
             fileChooser.destroy ();

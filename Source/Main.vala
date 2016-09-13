@@ -4,8 +4,8 @@ namespace Aphelion {
     public int main (string[] args) {
         Gtk.init (ref args);
         
-        var mainWindow = new MainWindow ();
-        mainWindow.show_all ();
+        var compManager = ComponentManager.GetInstance ();
+        compManager.LoadComponents ();                
 
         Gtk.main ();
         return 0;

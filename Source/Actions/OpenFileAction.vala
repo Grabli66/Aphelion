@@ -4,27 +4,27 @@ namespace Aphelion {
     */
     internal class OpenFileAction : Action {
         /*
-        *   Process key
+        *   Process shortcut
         */
-        private void OnKeyPressed (EventData data) {
-            var key = data as KeyPressEvent;
-            if ((key.KeyCode == KeyPressEvent.O_KEY) && (key.ControlDown)) {
-                Run ();
-            } 
+        private void OnShortcut (EventData data) {
+            Run ();
         }
 
         public OpenFileAction() {
             base ();
-            EventDispatcher.Subscribe (typeof(KeyPressEvent), OnKeyPressed);            
+            EventDispatcher.Subscribe (typeof(ShortcutEvent), OnShortcut);            
         }        
 
         /*
         *   Run command
         */
         public override void Run () {
-            var source = MainWindow.GetComponent (SourceEditor.DEFAULT_ID) as SourceEditor;
-            var filedialog = MainWindow.GetComponent (FileDialog.DEFAULT_ID) as FileDialog;
+            var compManager = ComponentManager.GetInstance ();
+
+            var source = compManager.Get (SourceEditor.DEFAULT_ID) as SourceEditor;
+            var filedialog = compManager.Get (FileDialog.DEFAULT_ID) as FileDialog;
             var data = filedialog.ShowOpen ();
+            if (data == null) return;
             source.AddSource (data);
         }
     }

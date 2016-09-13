@@ -2,7 +2,7 @@ namespace Aphelion {
     /*
     *   Action for save file
     */
-    internal class SaveFileAction : Action { 
+    internal class SaveAsFileAction : Action { 
         /*
         *   Process key
         */
@@ -13,7 +13,7 @@ namespace Aphelion {
             } */
         }
 
-        public SaveFileAction() {
+        public SaveAsFileAction() {
             base ();
             //EventDispatcher.Subscribe (typeof(KeyPressEvent), OnKeyPressed);
         }
@@ -22,11 +22,9 @@ namespace Aphelion {
         *   Run command
         */
         public override void Run () {
-            /*var source = MainWindow.GetComponent (SourceEditor.DEFAULT_ID) as SourceEditor;
-            if (source.IsChanged) {
-                var textFileInfo = source.GetCurrentTextFile ();
-                FileUtils.set_contents (textFileInfo.FilePath, textFileInfo.Data);
-            } */                       
+           /* var source = MainWindow.GetComponent (SourceEditor.DEFAULT_ID) as SourceEditor;
+            var filedialog = MainWindow.GetComponent (FileDialog.DEFAULT_ID) as FileDialog;
+            filedialog.ShowSave ();*/            
         }
     }
 }

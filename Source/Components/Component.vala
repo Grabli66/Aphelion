@@ -1,18 +1,37 @@
 namespace Aphelion {
+    /*
+    *   Component that loads into component manager
+    */
     internal abstract class Component : Object {
+        public const string DEFAULT_ID = "Component";
+
+        /*
+        *   Id of component
+        */
         public string Id { get; private set; }
 
         /*
-        *   Call when component add
+        *   Create all items in component.
+        *   Must have no calls to ComponentManager, 
+        *   cause component could not exist.
         */
-        public abstract void OnEnter ();
+        public virtual void OnInit () {}
 
         /*
-        *   Call when component leave window
+        *   For actions after item created
+        *   Can have calls of ComponentManager
         */
-        public abstract void OnLeave ();
+        public virtual void OnPostInit () {}
 
-        public Component (string id = "Component") {
+        /*
+        *   Remove component and it items
+        */
+        public virtual void OnRemove () {}
+
+        /*
+        *   Constructor
+        */
+        public Component (string id = DEFAULT_ID) {
             Id = id;
         }
     }
