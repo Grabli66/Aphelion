@@ -2,17 +2,9 @@ namespace Aphelion {
     /*
     *   Action for open file
     */
-    internal class OpenFileAction : Action {
-        /*
-        *   Process shortcut
-        */
-        private void OnShortcut (EventData data) {
-            Run ();
-        }
-
+    internal class OpenFileAction : Action {    
         public OpenFileAction() {
-            base ();
-            EventDispatcher.Subscribe (typeof(ShortcutEvent), OnShortcut);            
+            base ();                        
         }        
 
         /*

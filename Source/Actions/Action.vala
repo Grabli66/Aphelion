@@ -1,5 +1,5 @@
 namespace Aphelion {
-    internal abstract class Action : Object { 
+    public abstract class Action : Object { 
         public Action() {}
 
         /*

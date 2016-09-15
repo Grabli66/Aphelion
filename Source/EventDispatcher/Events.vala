@@ -2,7 +2,7 @@ namespace  Aphelion {
     /*
     *   Abstract event data
     */
-    internal abstract class EventData : Object {
+    public abstract class EventData : Object {
         
     }
 }

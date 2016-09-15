@@ -2,7 +2,7 @@ namespace Aphelion {
     /*
     *   Manage components: add, get, remove
     */
-    internal class ComponentManager : Object {
+    public class ComponentManager : Object {
         /*
         *   Instance of manager
         */
@@ -75,6 +75,8 @@ namespace Aphelion {
             Add (new FileDialog ());
             Add (new SourceEditor ());
             Add (new ShortcutManager());
+            Add (new ActionManager());
+            Add (new SettingsManager());
             Init ();
             PostInit ();
             Layout ();

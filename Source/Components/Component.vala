@@ -2,7 +2,7 @@ namespace Aphelion {
     /*
     *   Component that loads into component manager
     */
-    internal abstract class Component : Object {
+    public abstract class Component : Object {
         public const string DEFAULT_ID = "Component";
 
         /*

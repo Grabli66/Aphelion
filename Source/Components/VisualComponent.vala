@@ -4,7 +4,7 @@ namespace Aphelion {
     /*
     *   Visual component that has one or more gtk widget
     */
-    internal abstract class VisualComponent : Component {
+    public abstract class VisualComponent : Component {
         public const string DEFAULT_ID = "VisualComponent";
 
         /*

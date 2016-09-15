@@ -3,12 +3,12 @@ namespace  Aphelion {
     /*
     *   Delegate call when event emitted
     */
-    internal delegate void EventCall (EventData event);
+    public delegate void EventCall (EventData event);
 
     /*
     *   To box delegate for generic
     */
-    internal class DelegateBox : Object {
+    public class DelegateBox : Object {
         public EventCall Call { get; private set; }
 
         public DelegateBox (EventCall call) {
@@ -19,7 +19,7 @@ namespace  Aphelion {
     /*
     *   Dispatch all events
     */    
-    internal class EventDispatcher {
+    public class EventDispatcher {
         /*
         *   Subscribes
         */

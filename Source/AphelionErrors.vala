@@ -1,5 +1,5 @@
 namespace Aphelion {
-    internal errordomain AphelionErrors {
+    public errordomain AphelionErrors {
         Common;
     }
 }

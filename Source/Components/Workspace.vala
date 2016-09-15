@@ -1,5 +1,8 @@
 namespace Aphelion {
-    internal class Workspace : VisualComponent {
+    /*
+    *   Hold other components in place
+    */
+    public class Workspace : VisualComponent {
         public const string DEFAULT_ID = "Workspace";         
 
         /*

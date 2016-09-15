@@ -3,7 +3,7 @@ namespace Aphelion {
     *   Helper methods for component manager
     */
     [Compact]
-    internal class ComponentManagerHelper {
+    public class ComponentManagerHelper {
         /*
         *   Return main window widget
         */

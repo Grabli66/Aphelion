@@ -2,7 +2,7 @@ namespace Aphelion {
     /*
     *   File info and data
     */
-    internal class TextFileData {
+    public class TextFileData {
         /*
         *   Name of file
         */
@@ -23,8 +23,11 @@ namespace Aphelion {
         */        
         public TextFileData (string filePath, string content) {
             // TODO better 
+            FileName = "";
             var parts = filePath.split ("/");
-            FileName = parts[parts.length - 1];
+            if (parts.length > 0) {
+                FileName = parts[parts.length - 1];
+            }
             FilePath = filePath;
             Content = content;
         }
@@ -33,7 +36,7 @@ namespace Aphelion {
     /*
     *   Open/save files 
     */
-    internal class FileDialog : Component {
+    public class FileDialog : Component {
         public const string DEFAULT_ID = "FileDialog";
 
         public const string OPEN_FILE_NAME = "Open File";
@@ -59,9 +62,15 @@ namespace Aphelion {
                                       "_Cancel",
 				                      Gtk.ResponseType.CANCEL,
 				                      "_Open",
-				                      Gtk.ResponseType.ACCEPT);
+				                      Gtk.ResponseType.ACCEPT);            
                                     
             fileChooser.set_transient_for (mainWindow);
+            
+            var filter = new Gtk.FileFilter ();
+	        filter.set_filter_name ("Vala source");
+	        filter.add_pattern ("*.vala");
+            fileChooser.add_filter (filter);
+
             if (fileChooser.run () == Gtk.ResponseType.ACCEPT) {
                 var filePath = fileChooser.get_filename ();
                 stderr.printf (filePath);

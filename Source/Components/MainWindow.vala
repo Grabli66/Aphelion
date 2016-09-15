@@ -4,7 +4,7 @@ namespace Aphelion {
     /*
     *   Main window of IDE
     */
-    internal class MainWindow : VisualComponent { 
+    public class MainWindow : VisualComponent { 
         public const string DEFAULT_ID = "MainWindow";
 
         private const string CSS_MAIN = """
