@@ -1,39 +1,5 @@
 namespace Aphelion {
     /*
-    *   File info and data
-    */
-    public class TextFileData {
-        /*
-        *   Name of file
-        */
-        public string FileName { get; private set; }
-
-        /*
-        *   Full path of file
-        */
-        public string FilePath { get; private set; }
-
-        /*
-        *   Content of text file
-        */
-        public string Content { get; private set; }
-
-        /*
-        *   Constructor
-        */        
-        public TextFileData (string filePath, string content) {
-            // TODO better 
-            FileName = "";
-            var parts = filePath.split ("/");
-            if (parts.length > 0) {
-                FileName = parts[parts.length - 1];
-            }
-            FilePath = filePath;
-            Content = content;
-        }
-    }
-
-    /*
     *   Open/save files 
     */
     public class FileDialog : Component {
@@ -77,7 +43,7 @@ namespace Aphelion {
                 string data;
                 size_t size;
                 FileUtils.get_contents (filePath, out data, out size);                
-                res = new TextFileData (filePath, data);
+                res = new TextFileData.FromFilePath (filePath, data);
                 fileChooser.destroy ();
             }                        
             return res;

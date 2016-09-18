@@ -14,5 +14,9 @@ namespace Aphelion {
         public FocusedEvent (Component sender) {
             Sender = sender;
         }
+        
+        public void Shit () {
+        	stderr.printf ("GOOD");
+        }
     } 
 }

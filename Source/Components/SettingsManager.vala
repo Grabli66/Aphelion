@@ -19,7 +19,7 @@ namespace Aphelion {
 
             // TODO: Load save shortcuts from settings
             scm.Add (new Shortcut.FromString ("Ctrl+O", new OpenFileAction()));
-            //scm.Add (new Shortcut.FromString ("Ctrl+S"));
+            scm.Add (new Shortcut.FromString ("Ctrl+S", new SaveFileAction()));
             //scm.Add (new Shortcut.FromString ("Ctrl+Shift+S"));
         }
     }

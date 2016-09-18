@@ -65,7 +65,7 @@ namespace Aphelion {
         /*
         *   Convert shortcut info to string
         */
-        public static string ConvertToString (int keyCode, bool isCtrl, bool isShift, bool isAlt) {
+        public static string ConvertToString (int keyCode, bool isCtrl, bool isShift, bool isAlt) throws AphelionErrors.Common {
             InitKeyCodes ();
 
             var sb = new StringBuilder ();
@@ -94,7 +94,7 @@ namespace Aphelion {
         /*
         *   Convert event to string
         */
-        public static string EventToString (Gdk.EventKey e) {
+        public static string EventToString (Gdk.EventKey e) throws AphelionErrors.Common {
             var isCtrl = (e.state & Gdk.ModifierType.CONTROL_MASK) > 0;
             var isShift = (e.state & Gdk.ModifierType.SHIFT_MASK) > 0;
             var isAlt = (e.state & Gdk.ModifierType.MOD1_MASK) > 0;
@@ -183,9 +183,9 @@ namespace Aphelion {
             var mainWindow = ComponentManagerHelper.GetMainWindowWidget ();
 
             mainWindow.key_press_event.connect ((e) => {
-                stderr.printf (e.hardware_keycode.to_string ());                
-                var shortcutString = Shortcut.EventToString (e);
-                try {                    
+                stderr.printf (e.hardware_keycode.to_string ());                                
+                try {
+                    var shortcutString = Shortcut.EventToString (e);                    
                     var cacheShortcut = _shortcuts[shortcutString];
                     if (cacheShortcut != null) {
                         // Emit short cut event

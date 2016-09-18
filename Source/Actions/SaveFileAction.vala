@@ -2,31 +2,26 @@ namespace Aphelion {
     /*
     *   Action for save file
     */
-    internal class SaveFileAction : Action { 
-        /*
-        *   Process key
-        */
-        private void OnKeyPressed (EventData data) {
-            /*var key = data as KeyPressEvent;
-            if ((key.KeyCode == KeyPressEvent.S_KEY) && (key.ControlDown)) {
-                Run ();
-            } */
-        }
-
+    internal class SaveFileAction : Action {
         public SaveFileAction() {
             base ();
-            //EventDispatcher.Subscribe (typeof(KeyPressEvent), OnKeyPressed);
+            EventDispatcher.Subscribe (typeof(ContentResponseEvent), (e) => {                
+                var contentEvent = (ContentResponseEvent) e;
+                var data = contentEvent.Content.GetContentData ();
+                if (data.FilePath == null) {
+                    // Save as
+                    return;
+                } else {
+                    FileUtils.set_contents (data.FilePath, data.Content);
+                }                
+            });
         }
 
         /*
         *   Run command
         */
         public override void Run () {
-            /*var source = MainWindow.GetComponent (SourceEditor.DEFAULT_ID) as SourceEditor;
-            if (source.IsChanged) {
-                var textFileInfo = source.GetCurrentTextFile ();
-                FileUtils.set_contents (textFileInfo.FilePath, textFileInfo.Data);
-            } */                       
+            EventDispatcher.Emit (new ContentRequestEvent ());                       
         }
     }
 }
