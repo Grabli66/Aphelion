@@ -28,7 +28,8 @@
   <color name="blue"       value="#5398d0"/>
   <color name="white"      value="#FFFFFF"/>
   <color name="red"        value="#FF0000"/>
-  <color name="gray"       value="#BEBEBE"/>    
+  <color name="grey"       value="#BEBEBE"/>
+  <color name="comment"    value="#5b8b43"/>    
 
   <style name="text"                        foreground="#CECECE" background="#1e1e1e"/>
 
@@ -45,5 +46,10 @@
   <style name="line-numbers"                foreground="#474747" background="#1e1e1e" bold="false" />
 
   <style name="current-line"                background="#2e2e2e"/>
-  <style name="selection"                   background="#264f78"/>    
+  <style name="selection"                   background="#264f78"/>
+
+  <!-- Comments -->
+  <style name="def:comment"                 foreground="comment"/>  
+  <style name="def:doc-comment"             foreground="comment"/>
+  <style name="def:doc-comment-element"     foreground="comment"/>    
 </style-scheme>
