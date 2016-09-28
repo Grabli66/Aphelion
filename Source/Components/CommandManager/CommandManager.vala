@@ -52,11 +52,13 @@ namespace  Aphelion {
             var saveAsShortcut = new Shortcut(39, true, true);
             var closeShortcut = new Shortcut(25, true);
             var quitShortcut = new Shortcut(24, true);
+            var newShortcut = new Shortcut(57, true);
             _commands[openShortcut.hash ()] = new CommandValue (new OpenCommand (), openShortcut);
             _commands[saveShortcut.hash ()] = new CommandValue (new SaveCommand (), saveShortcut);
             _commands[saveAsShortcut.hash ()] = new CommandValue (new SaveAsCommand (), saveAsShortcut);
             _commands[closeShortcut.hash ()] = new CommandValue (new CloseCommand (), closeShortcut);
             _commands[quitShortcut.hash ()] = new CommandValue (new QuitCommand (), quitShortcut);
+            _commands[newShortcut.hash ()] = new CommandValue (new NewCommand (), newShortcut);
 
             foreach (var command in _commands.values) {
                 command.Command.Init ();

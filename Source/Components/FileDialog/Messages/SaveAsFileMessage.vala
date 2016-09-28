@@ -1,18 +1,18 @@
 namespace  Aphelion {
     /*
-    *   Content saved message
+    *   One or more files opened
     */
-    public class ContentSavedMessage : Message {
+    public class SaveAsFileMessage : Message {
         /*
-        *   Saved content
+        *   Content to save
         */
         public IContent Content { get; private set; }
 
         /*
         *   Constructor
         */
-        public ContentSavedMessage (IContent content) {
+        public SaveAsFileMessage (IContent content) {
             this.Content = content;
-        }    
-    }
+        }        
+    } 
 }

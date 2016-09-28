@@ -14,6 +14,11 @@ namespace Aphelion {
         private Gtk.ScrolledWindow _rootWidget;
 
         /*
+        *   Caption label
+        */
+        private Gtk.Label _captionLabel;
+
+        /*
         *   Close button
         */
         private Gtk.Button _closeButton;
@@ -32,26 +37,61 @@ namespace Aphelion {
         *   Source buffer
         */
         private Gtk.SourceBuffer _buffer;
+        
+        private bool _changed;
 
         /*
         *   Content changed
         */
-        private bool _changed;
+        internal bool Changed {
+            get {
+                return _changed;
+            }
+            set {
+                _changed = value;
+                _closeButton.image = _changed ? _changedImage : _closeImage;
+            }
+        }
+
+        private string _caption; 
 
         /*
         *   Caption of page
         */
-        internal string Caption { get; private set; }
+        internal string Caption { 
+            get {
+                return _caption;
+            } 
+            private set {
+                if (_captionLabel != null) {                
+                    _caption = value;
+                    _captionLabel.label = _caption;
+                } else {
+                    _caption = "";
+                }
+            } 
+        }
+
+        private string _filePath;
 
         /*
         *   Content file name
         */
-        internal string FilePath { get; private set; }
+        internal string FilePath {
+            get {
+                return _filePath;
+            }
+            set {
+                var file = File.new_for_path (value);
+                Caption = file.get_basename ();
+                _filePath = value;
+            }
+        }
 
         /*
         *   Is temp
         */
-        internal bool IsTemp { get; private set; }
+        internal bool IsTemp;    
 
         /*
         *   Signal when close click
@@ -66,14 +106,7 @@ namespace Aphelion {
         /*
         *   Signal when  focus out
         */
-        internal signal void OnFocusOut (SourcePage page);
-        
-        /*
-        *   Remove page
-        */
-        internal void RemovePage () {
-            _notebook.detach_tab (_rootWidget);
-        }        
+        internal signal void OnFocusOut (SourcePage page);                  
 
         /*
         *   Create page with source
@@ -100,13 +133,13 @@ namespace Aphelion {
             _rootWidget.add (view);
             
             var box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0);
-            var label = new Gtk.Label (Caption);
+            _captionLabel = new Gtk.Label (Caption);
             _closeButton = new Gtk.Button ();
             _closeButton.get_style_context ().add_class ("button-icon");
             _closeImage = new Gtk.Image.from_file ("./Data/cross.svg");            
             _changedImage = new Gtk.Image.from_file ("./Data/circle.svg");
             _closeButton.image = _closeImage;            
-            box.pack_start (label, true, true);
+            box.pack_start (_captionLabel, true, true);
             box.pack_start (_closeButton, false, false);
             _notebook.append_page (_rootWidget, box);
             box.show_all ();            
@@ -138,8 +171,15 @@ namespace Aphelion {
             });
 
             _buffer.changed.connect (() => {                
-                SetChanged (true);
+                Changed = true;
             });
+        }
+
+        /*
+        *   Remove page
+        */
+        internal void RemovePage () {
+            _notebook.detach_tab (_rootWidget);
         }
 
         /*
@@ -150,27 +190,17 @@ namespace Aphelion {
                 return new TextContent (_buffer.text);
             }
 
-            return new TextFileContent (FilePath, _buffer.text);
-        }
-
-        /*
-        *   Set content changed flag
-        */
-        internal void SetChanged (bool ch) {
-            _changed = ch;
-            _closeButton.image = _changed ? _changedImage : _closeImage;            
+            return new TextFileContent (_filePath, _buffer.text);
         }
 
         /*
         *   Constructor
         */
         public SourcePage (string filePath, string data, bool isTemp, Gtk.Notebook notebook) {
-            _notebook = notebook;
-            FilePath = filePath;
-            IsTemp = isTemp;
-            var file = File.new_for_path (filePath);
-            Caption = file.get_basename ();
+            _notebook = notebook;            
+            IsTemp = isTemp;            
             CreatePage (data);
+            FilePath  = filePath;
         }        
     }
 }

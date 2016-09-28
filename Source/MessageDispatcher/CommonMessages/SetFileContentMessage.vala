@@ -6,13 +6,13 @@ namespace  Aphelion {
         /*
         *   Opened files with content
         */
-        public TextFileContent[] Content { get; private set; }
+        public TextFileContent Content { get; private set; }
 
         /*
         *   Constructor
         */
-        public SetFileContentMessage (TextFileContent[] files) {
-            this.Content = files;
+        public SetFileContentMessage (TextFileContent content) {
+            this.Content = content;
         }    
     }
 }

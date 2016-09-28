@@ -19,8 +19,8 @@ namespace  Aphelion {
         /*
         *   Process FilesOpenedMessage
         */
-        private void RecieveFilesOpened (FilesOpenedMessage message) {            
-            MessageDispatcher.GetInstance ().Send (this, _handler, new SetFileContentMessage (message.Files));
+        private void RecieveFileOpened (FileOpenedMessage message) {            
+            MessageDispatcher.GetInstance ().Send (this, _handler, new SetFileContentMessage (message.File));
         }        
 
         /*
@@ -30,7 +30,7 @@ namespace  Aphelion {
             var dispatcher = MessageDispatcher.GetInstance ();
             // Register messages
             dispatcher.Register (typeof (ReturnContentHandlerMessage), this);
-            dispatcher.Register (typeof (FilesOpenedMessage), this);
+            dispatcher.Register (typeof (FileOpenedMessage), this);
         }
 
         /*
@@ -46,7 +46,7 @@ namespace  Aphelion {
         */
         public void OnMessage (Object sender, Message data) {
             if (data is ReturnContentHandlerMessage) RecieveFileContentHandler ((ReturnContentHandlerMessage)data);                                                
-            if (data is FilesOpenedMessage) RecieveFilesOpened ((FilesOpenedMessage)data);
+            if (data is FileOpenedMessage) RecieveFileOpened ((FileOpenedMessage)data);
         }
     }   
 }

@@ -2,6 +2,6 @@ namespace  Aphelion {
     /*
     *   Abstract message
     */
-    public abstract class Message : Object {        
+    public abstract class Message : Object {             
     }
 }

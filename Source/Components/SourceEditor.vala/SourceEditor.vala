@@ -34,6 +34,11 @@ namespace  Aphelion {
         private SourcePage? _focusedPage;
 
         /*
+        *   Counter for temp page
+        */
+        private int _tempCounter = 1;
+
+        /*
         *   Return self type
         */
         private void ReturnGetFileContentHandler (Object sender, GetFileContentHandlerMessage message) {
@@ -43,9 +48,10 @@ namespace  Aphelion {
         /*
         *   Return file content
         */
-        private void ReturnGetFileContent (Object sender, GetFileContentMessage data) {
+        private void ReturnGetFileContent (Object sender, GetFileContentMessage message) {
             if (_focusedPage == null) return;
             var content = _focusedPage.GetFileContent ();
+            content.Id = _focusedPage.FilePath;
             MessageDispatcher.GetInstance ().Send (this, sender.get_type (), new ReturnFileContentMessage (content));
         }
 
@@ -53,29 +59,49 @@ namespace  Aphelion {
         *   Set file content
         */
         private void SetFileContent (SetFileContentMessage message) {
-            var content = message.Content[0];
+            var content = message.Content;
             AddSource (content.FilePath, content.Content);
-        }
+        }        
 
         /*
         *   On content saved
         */
-        private void ContentSaved (ContentSavedMessage data) {
-            // TODO compare content
-            if (_focusedPage == null) return;
-            _focusedPage.SetChanged (false);
+        private void ContentSaved (FileSavedMessage message) {
+            var page = _pages[message.Content.Id];            
+            if (page == null) return;
+            
+            var content = message.Content as TextFileContent;
+            if (content == null) return;                                        
+            page.FilePath  = content.FilePath;
+            if (page.IsTemp) {
+                _pages.remove (message.Content.Id);
+                _pages[page.FilePath] = page;
+                _tempCounter--;
+            }
+            page.IsTemp = false;
+            page.Changed  = false;                                                                   
+        }
+
+        /*
+        *   Get temp file name
+        */
+        private string GetUntitledName () {
+            return @"Untitled-$(_tempCounter).vala";
         }
 
         /*
         *   Add source
         */
         private void AddSource (string path, string data, bool isTemp = false) {
-            var page = _pages[path];
+            var page = _pages[path];                        
             if (page != null) return;
+
             page = new SourcePage (path, data, isTemp, _notebook);
 
-            page.OnFocusIn.connect ((e) => {
-                _focusedPage = e;
+            if (isTemp) _tempCounter++;
+
+            page.OnFocusIn.connect ((e) => {                
+                _focusedPage = e;                
             });
 
             page.OnFocusOut.connect ((e) => {
@@ -83,21 +109,36 @@ namespace  Aphelion {
             });
 
             page.OnPageClose.connect ((e) => {
-                _pages.remove (e.FilePath);
-                e.RemovePage ();
+                RemovePage (e);
             });
 
             _pages[path] = page;
             _notebook.show_all ();            
-        }       
+        }
+
+        /*
+        *   Remove page
+        */
+        private void RemovePage (SourcePage page) {
+            _pages.remove (page.FilePath);
+            page.RemovePage ();
+            _tempCounter--;
+        }
 
         /*
         *   Process CloseMessage
         */
         private void ClosePage (CloseMessage data) {
             if (_focusedPage == null) return;
-            _pages.remove (_focusedPage.FilePath);
-            _focusedPage.RemovePage ();
+            RemovePage (_focusedPage);
+        }
+
+        /*
+        *   Process new page
+        */
+        private void NewPage (NewMessage message) {            
+            if (_focusedPage == null) return;            
+            AddSource (GetUntitledName (), "", true);
         }
 
         /*
@@ -105,15 +146,16 @@ namespace  Aphelion {
         */
         public override void Init () {
             _notebook = new Gtk.Notebook ();
-            AddSource ("Empty.vala", "", true);
+            AddSource (GetUntitledName (), "", true);
 
             var dispatcher = MessageDispatcher.GetInstance ();
             // Register messages
             dispatcher.Register (typeof (GetFileContentHandlerMessage), this);
             dispatcher.Register (typeof (SetFileContentMessage), this);
             dispatcher.Register (typeof (GetFileContentMessage), this);
-            dispatcher.Register (typeof (ContentSavedMessage), this);
+            dispatcher.Register (typeof (FileSavedMessage), this);
             dispatcher.Register (typeof (CloseMessage), this);
+            dispatcher.Register (typeof (NewMessage), this);
         }
 
         /*
@@ -130,8 +172,9 @@ namespace  Aphelion {
             if (data is GetFileContentHandlerMessage) ReturnGetFileContentHandler (sender, (GetFileContentHandlerMessage) data);            
             if (data is SetFileContentMessage) SetFileContent ((SetFileContentMessage)data);
             if (data is GetFileContentMessage) ReturnGetFileContent (sender, (GetFileContentMessage)data);
-            if (data is ContentSavedMessage) ContentSaved ((ContentSavedMessage)data);
+            if (data is FileSavedMessage) ContentSaved ((FileSavedMessage)data);
             if (data is CloseMessage) ClosePage ((CloseMessage)data);
+            if (data is NewMessage) NewPage ((NewMessage)data);
         }
     }
 }
