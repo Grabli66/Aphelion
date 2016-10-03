@@ -1,18 +1,18 @@
 namespace  Aphelion {
     /*
-    *   Request for set file content
+    *   Request for open file
     */
-    public class SetFileContentMessage : Message {
+    public class FileOpenedMessage : Message {   
         /*
-        *   Opened files with content
+        *   Saved content
         */
         public FileContent Content { get; private set; }
 
         /*
         *   Constructor
         */
-        public SetFileContentMessage (FileContent content) {
+        public FileOpenedMessage (FileContent content) {
             this.Content = content;
-        }    
+        }        
     }
 }

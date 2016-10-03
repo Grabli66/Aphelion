@@ -2,33 +2,47 @@ namespace  Aphelion {
     /*
     *   Save command 
     */
-    public class SaveCommand : Object, ICommand, IMessageRecepient {
+    public class SaveCommand : Object, ICommand {
         /*
         *   Content sender
         */
-        private Object _contentSender;
+        private Type _contentSender;
+
+        /*
+        *   Content to save
+        */
+        private Content _content;
 
         /*
         *   Process GetFileContentHandlerMessage
         */
-        private void RecieveFileContentMessage (Object sender, ReturnFileContentMessage message) {
+        private void RecieveFileContentMessage (Type sender, Message data) {
+            var messa = (ReturnFileContentMessage) data;
             _contentSender = sender;
-            if (message.Content is TextFileContent) {
-                // TODO: send to component that save file
-                var content = message.Content as TextFileContent;                
-                FileUtils.set_contents (content.FilePath, content.Content);
-                MessageDispatcher.GetInstance ().Send (this, sender.get_type (), new FileSavedMessage (content)); 
-            } else if (message.Content is TextContent) {
-                var content = message.Content as TextContent;
-                MessageDispatcher.GetInstance ().Send (this, typeof(FileDialog), new SaveAsFileMessage (content));
+            if (messa.Content is FileContent) {
+                var content = messa.Content as FileContent;
+                MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (FileOperations), new SaveFileMessage (content)); 
+            } else if (messa.Content is Content) {
+                _content = messa.Content as Content;
+                MessageDispatcher.GetInstance ().Send (this.get_type (), typeof(FileDialog), new ShowFileDialogMessage (DialogOperation.SAVE));
             }
+        }
+
+        /*
+        *   Process ReturnFilePathMessage
+        */
+        private void RecieveFilePath (Type sender, Message data) {
+            var messa = (ReturnFilePathMessage) data;
+            var content = new FileContent (_content.Id, messa.FilePath, _content.Content);
+            MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (FileOperations), new SaveFileMessage (content));
         }
 
         /*
         *   Process FileSavedMessage
         */
-        private void FileSaved (FileSavedMessage data) {
-            MessageDispatcher.GetInstance ().Send (this, _contentSender.get_type (), data); 
+        private void FileSaved (Type sender, Message data) {
+            var message = (FileSavedMessage) data;
+            MessageDispatcher.GetInstance ().Send (this.get_type (), _contentSender, data);
         }
 
         /*
@@ -37,8 +51,9 @@ namespace  Aphelion {
         public void Init () {
             var dispatcher = MessageDispatcher.GetInstance ();
             // Register messages
-            dispatcher.Register (typeof (ReturnFileContentMessage), this);
-            dispatcher.Register (typeof (FileSavedMessage), this);
+            dispatcher.Register (this, typeof (ReturnFileContentMessage), RecieveFileContentMessage);
+            dispatcher.Register (this, typeof (FileSavedMessage), FileSaved);
+            dispatcher.Register (this, typeof (ReturnFilePathMessage), RecieveFilePath);
         }
         
         /*
@@ -46,15 +61,7 @@ namespace  Aphelion {
         */        
         public void Run () {
             // Get content for save
-            MessageDispatcher.GetInstance ().SendBroadcast (this, new GetFileContentMessage ());             
-        }
-
-        /*
-        *   On receive message
-        */
-        public void OnMessage (Object sender, Message data) {
-            if (data is ReturnFileContentMessage) RecieveFileContentMessage (sender, (ReturnFileContentMessage)data);            
-            if (data is FileSavedMessage) FileSaved ((FileSavedMessage)data);
-        }
+            MessageDispatcher.GetInstance ().SendBroadcast (this.get_type (), new GetFileContentMessage ());             
+        }        
     }   
 }

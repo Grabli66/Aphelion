@@ -185,12 +185,12 @@ namespace Aphelion {
         /*
         *   Return file content        
         */
-        internal TextContent GetFileContent () {
+        internal Content GetContent () {
             if (IsTemp) {
-                return new TextContent (_buffer.text);
+                return new Content (_caption, _buffer.text);
             }
 
-            return new TextFileContent (_filePath, _buffer.text);
+            return new FileContent (_filePath, _filePath, _buffer.text);
         }
 
         /*

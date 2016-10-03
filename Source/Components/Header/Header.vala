@@ -20,7 +20,7 @@ namespace  Aphelion {
         *   Install component
         */
         public override void Install () {
-            MessageDispatcher.GetInstance ().Send (this, typeof (MainWindow), new SetHeaderWidgetMessage (_header));
+            MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (MainWindow), new SetHeaderWidgetMessage (_header));
         }        
     }
 }

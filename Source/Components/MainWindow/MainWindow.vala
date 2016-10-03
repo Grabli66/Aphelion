@@ -70,24 +70,26 @@ namespace  Aphelion {
         /*
         *   Set header of window
         */
-        private void SetHeaderWidget (SetHeaderWidgetMessage message) {
+        private void SetHeaderWidget (Type sender, Message data) {
+            var message = (SetHeaderWidgetMessage)data;
             _mainWindow.set_titlebar (message.Header);
-            message.Header.show_all ();
+            message.Header.show_all ();            
         }
 
         /*
         *   Set root widget of window
         */
-        private void SetRootWidget (SetRootWidgetMessage message) {
+        private void SetRootWidget (Type sender,Message data) {
+            var message = (SetRootWidgetMessage)data;
             _mainWindow.add (message.Widget);
-            message.Widget.show_all ();
+            message.Widget.show_all ();            
         }
 
         /*
         *   Return self
         */
-        private void GetMainWindow (Object sender) {
-            MessageDispatcher.GetInstance ().Send (this, sender.get_type (), new ReturnWindowMessage (_mainWindow));
+        private void GetMainWindow (Type sender, Message data) {
+            MessageDispatcher.GetInstance ().Send (this.get_type (), sender, new ReturnWindowMessage (_mainWindow));            
         }
 
         /*
@@ -104,10 +106,10 @@ namespace  Aphelion {
             SetMainStyle ();            
 
             var dispatcher = MessageDispatcher.GetInstance ();
-            // Register messages
-            dispatcher.Register (typeof (SetHeaderWidgetMessage), this);
-            dispatcher.Register (typeof (SetRootWidgetMessage), this);
-            dispatcher.Register (typeof (GetMainWindowMessage), this);
+            // Register messages            
+            dispatcher.Register (this, typeof (SetHeaderWidgetMessage), SetHeaderWidget);
+            dispatcher.Register (this, typeof (SetRootWidgetMessage), SetRootWidget);
+            dispatcher.Register (this, typeof (GetMainWindowMessage), GetMainWindow);
         }
 
         /*
@@ -121,20 +123,11 @@ namespace  Aphelion {
                 var isCtrl = (e.state & Gdk.ModifierType.CONTROL_MASK) > 0;
                 var isShift = (e.state & Gdk.ModifierType.SHIFT_MASK) > 0;
                 var isAlt = (e.state & Gdk.ModifierType.MOD1_MASK) > 0;
-                MessageDispatcher.GetInstance ().SendBroadcast (this, new KeyPressMessage (e.hardware_keycode, isCtrl, isShift, isAlt));
+                MessageDispatcher.GetInstance ().SendBroadcast (this.get_type (), new KeyPressMessage (e.hardware_keycode, isCtrl, isShift, isAlt));
                 return false;
             });
 
             _mainWindow.show_all ();
         }
-
-        /*
-        *   On receive message
-        */
-        public override void OnMessage (Object sender, Message data) {            
-            if (data is SetHeaderWidgetMessage) SetHeaderWidget ((SetHeaderWidgetMessage)data);
-            if (data is SetRootWidgetMessage) SetRootWidget ((SetRootWidgetMessage)data);                        
-            if (data is GetMainWindowMessage) GetMainWindow (sender);
-        } 
     }
 }

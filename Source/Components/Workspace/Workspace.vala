@@ -11,7 +11,8 @@ namespace  Aphelion {
         /*
         *   Place widget to some place 
         */
-        private void PlaceWidget (PlaceWidgetMessage message) {
+        private void PlaceWidget (Type sender, Message data) {
+            var message = (PlaceWidgetMessage) data;
             _rootBox.pack_start (message.Widget);
         }
 
@@ -23,21 +24,14 @@ namespace  Aphelion {
 
             var dispatcher = MessageDispatcher.GetInstance ();
             // Register messages
-            dispatcher.Register (typeof (PlaceWidgetMessage), this);
+            dispatcher.Register (this, typeof (PlaceWidgetMessage), PlaceWidget);
         }
 
         /*
         *   Install component
         */
         public override void Install () {
-            MessageDispatcher.GetInstance ().Send (this, typeof (MainWindow), new SetRootWidgetMessage (_rootBox));          
-        }
-
-        /*
-        *   On receive message
-        */
-        public override void OnMessage (Object sender, Message data) {            
-            if (data is PlaceWidgetMessage) PlaceWidget ((PlaceWidgetMessage)data);                                    
-        } 
+            MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (MainWindow), new SetRootWidgetMessage (_rootBox));          
+        }         
     }
 }

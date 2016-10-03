@@ -35,9 +35,10 @@ namespace  Aphelion {
         /*
         *   Process key press
         */
-        private void KeyPress (KeyPressMessage message) {  
-            stderr.printf (@"KeyPressed: $(message.KeyCode)\n");
-            var hash = Shortcut.CalcHash (message.KeyCode, message.IsCtrl, message.IsShift, message.IsAlt);
+        private void KeyPress (Type sender, Message data) {
+            var messa = (KeyPressMessage) data;  
+            //message (@"KeyPressed: $(messa.KeyCode)");
+            var hash = Shortcut.CalcHash (messa.KeyCode, messa.IsCtrl, messa.IsShift, messa.IsAlt);
             var command = _commands[hash];
             if (command == null) return;
             command.Command.Run ();
@@ -71,17 +72,9 @@ namespace  Aphelion {
         public override void Init () {
             var dispatcher = MessageDispatcher.GetInstance ();
             // Register messages
-            dispatcher.Register (typeof (KeyPressMessage), this);
-            dispatcher.Register (typeof (AddCommandMessage), this);
+            dispatcher.Register (this, typeof (KeyPressMessage), KeyPress);            
 
             AddBuiltInCommands ();
-        }
-
-        /*
-        *   On receive message
-        */
-        public override void OnMessage (Object sender, Message data) {            
-            if (data is KeyPressMessage) KeyPress ((KeyPressMessage)data);                                    
-        }
+        }        
     }
 }

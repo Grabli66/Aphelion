@@ -15,14 +15,32 @@ namespace  Aphelion {
         /*
         *   Recieve main window widget
         */
-        private void RecieveMainWindow (ReturnWindowMessage message) {
+        private void RecieveMainWindow (Type sender, Message data) {
+            var message = (ReturnWindowMessage) data;
             _mainWindow = message.MainWindow;
+        }
+
+        /*
+        *   Process ShowFileDialogMessage
+        */
+        private void ShowDialog (Type sender, Message data) {
+            var message = (ShowFileDialogMessage) data;
+            switch (message.Operation) {
+                case DialogOperation.OPEN:
+                    OpenFile (sender, message); 
+                    break;
+                case DialogOperation.SAVE:
+                    SaveFile (sender, message);
+                    break;
+            default:
+                break;
+            }
         }
 
         /*
         *   Show open file dialog
         */
-        private void OpenFile (Object sender, OpenFileMessage message) {
+        private void OpenFile (Type sender, ShowFileDialogMessage message) {
             var fileChooser = new Gtk.FileChooserDialog (OPEN_FILE_NAME, _mainWindow,
                                       Gtk.FileChooserAction.OPEN, 
                                       "_Cancel",
@@ -41,12 +59,7 @@ namespace  Aphelion {
 
             if (fileChooser.run () == Gtk.ResponseType.ACCEPT) {
                 var filePath = fileChooser.get_filename ();
-                stderr.printf (filePath + "\n");
-                string data;
-                size_t size;
-                FileUtils.get_contents (filePath, out data, out size);                
-                var res = new TextFileContent (filePath, data);
-                MessageDispatcher.GetInstance ().Send (this, sender.get_type (), new FileOpenedMessage (res));                
+                MessageDispatcher.GetInstance ().Send (this.get_type (), sender, new ReturnFilePathMessage (filePath, DialogOperation.OPEN));                              
             }   
 
             fileChooser.destroy ();
@@ -55,7 +68,7 @@ namespace  Aphelion {
         /*
         *   Show save as dialog
         */
-        private void SaveAsFile (Object sender, SaveAsFileMessage message) {
+        private void SaveFile (Type sender, ShowFileDialogMessage message) {
             var fileChooser = new Gtk.FileChooserDialog (SAVE_AS_FILE_NAME, _mainWindow,
                                       Gtk.FileChooserAction.SAVE, 
                                       "_Cancel",
@@ -73,12 +86,8 @@ namespace  Aphelion {
             fileChooser.add_filter (filter);
 
             if (fileChooser.run () == Gtk.ResponseType.ACCEPT) {
-                var filePath = fileChooser.get_filename ();                                
-                var content = message.Content as TextContent;
-                FileUtils.set_contents (filePath, content.Content);  
-                var newContent = new TextFileContent (filePath, content.Content);
-                newContent.Id = content.Id;                              
-                MessageDispatcher.GetInstance ().Send (this, sender.get_type (), new FileSavedMessage (newContent));                
+                var filePath = fileChooser.get_filename ();                                                           
+                MessageDispatcher.GetInstance ().Send (this.get_type (), sender, new ReturnFilePathMessage (filePath, DialogOperation.SAVE));                
             }   
 
             fileChooser.destroy ();
@@ -90,25 +99,15 @@ namespace  Aphelion {
         public override void Init () {
             var dispatcher = MessageDispatcher.GetInstance ();
             // Register messages
-            dispatcher.Register (typeof (ReturnWindowMessage), this);
-            dispatcher.Register (typeof (OpenFileMessage), this);
-            dispatcher.Register (typeof (SaveAsFileMessage), this);
+            dispatcher.Register (this, typeof (ReturnWindowMessage), RecieveMainWindow);
+            dispatcher.Register (this, typeof (ShowFileDialogMessage), ShowDialog);            
         }
 
         /*
         *   Place all visual items to other components
         */
         public override void Install () {
-             MessageDispatcher.GetInstance ().Send (this, typeof (MainWindow), new GetMainWindowMessage ());
-        }
-
-        /*
-        *   On receive message
-        */
-        public override void OnMessage (Object sender, Message data) {
-            if (data is ReturnWindowMessage) RecieveMainWindow ((ReturnWindowMessage)data);            
-            if (data is OpenFileMessage) OpenFile (sender, (OpenFileMessage)data);
-            if (data is SaveAsFileMessage) SaveAsFile (sender, (SaveAsFileMessage)data);
+             MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (MainWindow), new GetMainWindowMessage ());
         }
     }
 }

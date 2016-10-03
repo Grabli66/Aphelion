@@ -2,7 +2,7 @@ namespace Aphelion {
     /*
     *   Component that holds other items, recieve and send messages
     */
-    public abstract class Component : Object, IMessageRecepient {
+    public abstract class Component : Object {
         /*
         *   Create component items
         */
@@ -12,10 +12,5 @@ namespace Aphelion {
         *   Install component
         */
         public virtual void Install () {}
-
-        /*
-        *   On receive message
-        */
-        public virtual void OnMessage (Object sender, Message data) {}
     }
 }

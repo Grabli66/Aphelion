@@ -2,26 +2,36 @@ namespace  Aphelion {
     /*
     *   Open command 
     */
-    public class OpenCommand : Object, ICommand, IMessageRecepient {
+    public class OpenCommand : Object, ICommand {
         /*
         *   File handler
         */
         private Type _handler;        
 
         /*
-        *   Process GetFileContentHandlerMessage
+        *   Process ReturnContentHandlerMessage
         */
-        private void RecieveFileContentHandler (ReturnContentHandlerMessage message) {
+        private void RecieveFileContentHandler (Type sender, Message data) {
+            var message = (ReturnContentHandlerMessage) data;
             _handler = message.Handler;
-            MessageDispatcher.GetInstance ().Send (this, typeof (FileDialog), new OpenFileMessage ());
+            MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (FileDialog), new ShowFileDialogMessage (DialogOperation.OPEN));
         }
 
         /*
-        *   Process FilesOpenedMessage
+        *   Process ReturnFilePathMessage
         */
-        private void RecieveFileOpened (FileOpenedMessage message) {            
-            MessageDispatcher.GetInstance ().Send (this, _handler, new SetFileContentMessage (message.File));
-        }        
+        private void RecieveFilePath (Type sender, Message data) {
+            var message = (ReturnFilePathMessage) data;
+            MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (FileOperations), new OpenFileMessage (message.FilePath));
+        }
+
+        /*
+        *   Process FileOpenedMessage
+        */
+        private void FileOpened (Type sender, Message data) {
+            var message = (FileOpenedMessage) data;
+            MessageDispatcher.GetInstance ().Send (this.get_type (), _handler, new SetFileContentMessage (message.Content));
+        }
 
         /*
         *   Init command
@@ -29,8 +39,9 @@ namespace  Aphelion {
         public void Init () {
             var dispatcher = MessageDispatcher.GetInstance ();
             // Register messages
-            dispatcher.Register (typeof (ReturnContentHandlerMessage), this);
-            dispatcher.Register (typeof (FileOpenedMessage), this);
+            dispatcher.Register (this, typeof (ReturnContentHandlerMessage), RecieveFileContentHandler);
+            dispatcher.Register (this, typeof (ReturnFilePathMessage), RecieveFilePath);
+            dispatcher.Register (this, typeof (FileOpenedMessage), FileOpened);
         }
 
         /*
@@ -38,15 +49,7 @@ namespace  Aphelion {
         */        
         public void Run () {
             // Request for file content
-            MessageDispatcher.GetInstance ().SendBroadcast (this, new GetFileContentHandlerMessage ());
-        }
-
-        /*
-        *   On receive message
-        */
-        public void OnMessage (Object sender, Message data) {
-            if (data is ReturnContentHandlerMessage) RecieveFileContentHandler ((ReturnContentHandlerMessage)data);                                                
-            if (data is FileOpenedMessage) RecieveFileOpened ((FileOpenedMessage)data);
-        }
+            MessageDispatcher.GetInstance ().SendBroadcast (this.get_type (), new GetFileContentHandlerMessage ());
+        }       
     }   
 }

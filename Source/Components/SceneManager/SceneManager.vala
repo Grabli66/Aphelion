@@ -21,6 +21,7 @@ namespace  Aphelion {
             manager.Install (typeof (SourceEditor));
             manager.Install (typeof (CommandManager));
             manager.Install (typeof (FileDialog));
+            manager.Install (typeof (FileOperations));
         }
     }
 }

@@ -41,24 +41,27 @@ namespace  Aphelion {
         /*
         *   Return self type
         */
-        private void ReturnGetFileContentHandler (Object sender, GetFileContentHandlerMessage message) {
-            MessageDispatcher.GetInstance ().Send (this, sender.get_type (), new ReturnContentHandlerMessage (this.get_type ()));
+        private void ReturnGetFileContentHandler (Type sender, Message data) {
+            var message = (GetFileContentHandlerMessage) data;
+            MessageDispatcher.GetInstance ().Send (this.get_type (), sender, new ReturnContentHandlerMessage (this.get_type ()));
         } 
 
         /*
         *   Return file content
         */
-        private void ReturnGetFileContent (Object sender, GetFileContentMessage message) {
+        private void ReturnGetFileContent (Type sender, Message data) {
             if (_focusedPage == null) return;
-            var content = _focusedPage.GetFileContent ();
-            content.Id = _focusedPage.FilePath;
-            MessageDispatcher.GetInstance ().Send (this, sender.get_type (), new ReturnFileContentMessage (content));
+            if (!_focusedPage.Changed) return;
+            var message = (GetFileContentMessage) data;
+            var content = _focusedPage.GetContent ();            
+            MessageDispatcher.GetInstance ().Send (this.get_type (), sender, new ReturnFileContentMessage (content));
         }
 
         /*
         *   Set file content
         */
-        private void SetFileContent (SetFileContentMessage message) {
+        private void SetFileContent (Type sender, Message data) {
+            var message = (SetFileContentMessage) data;
             var content = message.Content;
             AddSource (content.FilePath, content.Content);
         }        
@@ -66,11 +69,12 @@ namespace  Aphelion {
         /*
         *   On content saved
         */
-        private void ContentSaved (FileSavedMessage message) {
-            var page = _pages[message.Content.Id];            
+        private void ContentSaved (Type sender, Message data) {
+            var message = (FileSavedMessage) data;
+            var page = _pages[message.Content.Id];                       
             if (page == null) return;
             
-            var content = message.Content as TextFileContent;
+            var content = message.Content as FileContent;
             if (content == null) return;                                        
             page.FilePath  = content.FilePath;
             if (page.IsTemp) {
@@ -128,15 +132,15 @@ namespace  Aphelion {
         /*
         *   Process CloseMessage
         */
-        private void ClosePage (CloseMessage data) {
-            if (_focusedPage == null) return;
+        private void ClosePage (Type sender, Message data) {
+            if (_focusedPage == null) return;            
             RemovePage (_focusedPage);
         }
 
         /*
         *   Process new page
         */
-        private void NewPage (NewMessage message) {            
+        private void NewPage (Type sender, Message data) {            
             if (_focusedPage == null) return;            
             AddSource (GetUntitledName (), "", true);
         }
@@ -150,31 +154,19 @@ namespace  Aphelion {
 
             var dispatcher = MessageDispatcher.GetInstance ();
             // Register messages
-            dispatcher.Register (typeof (GetFileContentHandlerMessage), this);
-            dispatcher.Register (typeof (SetFileContentMessage), this);
-            dispatcher.Register (typeof (GetFileContentMessage), this);
-            dispatcher.Register (typeof (FileSavedMessage), this);
-            dispatcher.Register (typeof (CloseMessage), this);
-            dispatcher.Register (typeof (NewMessage), this);
+            dispatcher.Register (this, typeof (GetFileContentHandlerMessage), ReturnGetFileContentHandler);
+            dispatcher.Register (this, typeof (SetFileContentMessage), SetFileContent);
+            dispatcher.Register (this, typeof (GetFileContentMessage), ReturnGetFileContent);
+            dispatcher.Register (this, typeof (FileSavedMessage), ContentSaved);
+            dispatcher.Register (this, typeof (CloseMessage), ClosePage);
+            dispatcher.Register (this, typeof (NewMessage), NewPage);
         }
 
         /*
         *   Install component
         */
         public override void Install () {
-            MessageDispatcher.GetInstance ().Send (this, typeof (Workspace), new PlaceWidgetMessage (_notebook));
-        }
-
-        /*
-        *   On receive message
-        */
-        public override void OnMessage (Object sender, Message data) {
-            if (data is GetFileContentHandlerMessage) ReturnGetFileContentHandler (sender, (GetFileContentHandlerMessage) data);            
-            if (data is SetFileContentMessage) SetFileContent ((SetFileContentMessage)data);
-            if (data is GetFileContentMessage) ReturnGetFileContent (sender, (GetFileContentMessage)data);
-            if (data is FileSavedMessage) ContentSaved ((FileSavedMessage)data);
-            if (data is CloseMessage) ClosePage ((CloseMessage)data);
-            if (data is NewMessage) NewPage ((NewMessage)data);
-        }
+            MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (Workspace), new PlaceWidgetMessage (_notebook));
+        }        
     }
 }

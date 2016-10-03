@@ -76,6 +76,7 @@ namespace  Aphelion {
             Add (new SourceEditor ());
             Add (new CommandManager ());
             Add (new FileDialog ());
+            Add (new FileOperations ());
 
             Init ();
             

@@ -6,12 +6,12 @@ namespace  Aphelion {
         /*
         *   Content
         */
-        public IContent Content { get; private set; }
+        public Content Content { get; private set; }
 
         /*
         *   Constructor
         */
-        public ReturnFileContentMessage (TextContent content) {
+        public ReturnFileContentMessage (Content content) {
             this.Content = content;
         }
     }

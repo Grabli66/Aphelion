@@ -6,12 +6,12 @@ namespace  Aphelion {
         /*
         *   Saved content
         */
-        public IContent Content { get; private set; }
+        public FileContent Content { get; private set; }
 
         /*
         *   Constructor
         */
-        public FileSavedMessage (IContent content) {
+        public FileSavedMessage (FileContent content) {
             this.Content = content;
         }        
     }

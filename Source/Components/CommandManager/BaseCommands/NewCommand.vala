@@ -7,7 +7,7 @@ namespace  Aphelion {
         *   Run command
         */        
         public void Run () {
-             MessageDispatcher.GetInstance ().SendBroadcast (this, new NewMessage ()); 
+             MessageDispatcher.GetInstance ().SendBroadcast (this.get_type (), new NewMessage ()); 
         }
     }   
 }
