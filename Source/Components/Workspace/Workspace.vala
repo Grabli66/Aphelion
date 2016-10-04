@@ -11,9 +11,10 @@ namespace  Aphelion {
         /*
         *   Place widget to some place 
         */
-        private void PlaceWidget (Type sender, Message data) {
+        private Message? PlaceWidget (Type sender, Message data) {
             var message = (PlaceWidgetMessage) data;
             _rootBox.pack_start (message.Widget);
+            return null;
         }
 
         /*
@@ -30,7 +31,7 @@ namespace  Aphelion {
         /*
         *   Install component
         */
-        public override void Install () {
+        public override async void Install () {
             MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (MainWindow), new SetRootWidgetMessage (_rootBox));          
         }         
     }

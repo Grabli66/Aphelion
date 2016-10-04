@@ -13,34 +13,27 @@ namespace  Aphelion {
         private Gtk.Window _mainWindow;
 
         /*
-        *   Recieve main window widget
-        */
-        private void RecieveMainWindow (Type sender, Message data) {
-            var message = (ReturnWindowMessage) data;
-            _mainWindow = message.MainWindow;
-        }
-
-        /*
         *   Process ShowFileDialogMessage
         */
-        private void ShowDialog (Type sender, Message data) {
+        private Message? ShowDialog (Type sender, Message data) {            
             var message = (ShowFileDialogMessage) data;
             switch (message.Operation) {
                 case DialogOperation.OPEN:
-                    OpenFile (sender, message); 
+                    return OpenFile (sender, message); 
                     break;
                 case DialogOperation.SAVE:
-                    SaveFile (sender, message);
+                    return SaveFile (sender, message);
                     break;
             default:
                 break;
             }
+            return null;
         }
 
         /*
         *   Show open file dialog
         */
-        private void OpenFile (Type sender, ShowFileDialogMessage message) {
+        private Message? OpenFile (Type sender, ShowFileDialogMessage message) {
             var fileChooser = new Gtk.FileChooserDialog (OPEN_FILE_NAME, _mainWindow,
                                       Gtk.FileChooserAction.OPEN, 
                                       "_Cancel",
@@ -57,18 +50,21 @@ namespace  Aphelion {
 	        filter.add_pattern ("*.vala");
             fileChooser.add_filter (filter);
 
+            Message? res = null;
+
             if (fileChooser.run () == Gtk.ResponseType.ACCEPT) {
-                var filePath = fileChooser.get_filename ();
-                MessageDispatcher.GetInstance ().Send (this.get_type (), sender, new ReturnFilePathMessage (filePath, DialogOperation.OPEN));                              
+                var filePath = fileChooser.get_filename ();                
+                res = new ReturnFilePathMessage (filePath, DialogOperation.OPEN);
             }   
 
             fileChooser.destroy ();
+            return res;
         }
 
         /*
         *   Show save as dialog
         */
-        private void SaveFile (Type sender, ShowFileDialogMessage message) {
+        private Message? SaveFile (Type sender, ShowFileDialogMessage message) {
             var fileChooser = new Gtk.FileChooserDialog (SAVE_AS_FILE_NAME, _mainWindow,
                                       Gtk.FileChooserAction.SAVE, 
                                       "_Cancel",
@@ -85,12 +81,15 @@ namespace  Aphelion {
 	        filter.add_pattern ("*.vala");
             fileChooser.add_filter (filter);
 
+            Message? res = null;
+
             if (fileChooser.run () == Gtk.ResponseType.ACCEPT) {
-                var filePath = fileChooser.get_filename ();                                                           
-                MessageDispatcher.GetInstance ().Send (this.get_type (), sender, new ReturnFilePathMessage (filePath, DialogOperation.SAVE));                
+                var filePath = fileChooser.get_filename ();                   
+                res = new ReturnFilePathMessage (filePath, DialogOperation.SAVE);                                                                                        
             }   
 
             fileChooser.destroy ();
+            return res;
         }
          
         /*
@@ -98,16 +97,16 @@ namespace  Aphelion {
         */
         public override void Init () {
             var dispatcher = MessageDispatcher.GetInstance ();
-            // Register messages
-            dispatcher.Register (this, typeof (ReturnWindowMessage), RecieveMainWindow);
-            dispatcher.Register (this, typeof (ShowFileDialogMessage), ShowDialog);            
+            // Register messages            
+            dispatcher.Register (this, typeof (ShowFileDialogMessage), ShowDialog);
         }
 
         /*
         *   Place all visual items to other components
         */
-        public override void Install () {
-             MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (MainWindow), new GetMainWindowMessage ());
+        public override async void Install () {
+             var res = (ReturnWindowMessage) yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (MainWindow), new GetMainWindowMessage ());
+             _mainWindow = res.MainWindow;
         }
     }
 }

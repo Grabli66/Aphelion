@@ -1,8 +1,11 @@
 namespace  Aphelion {
     /*
-    *   Delegate for get message
+    *   Message direction
     */
-    public delegate void OnMessageDelegate (Type sender, Message message);
+    public enum MessageDirection {
+        IN_DIRECTION,
+        OUT_DIRECTION;
+    }
 
     /*
     *   Dispatch all events
@@ -29,11 +32,13 @@ namespace  Aphelion {
         /*
         *   Log message send
         */
-        private void LogMessage (Type sender, Type destination, Message messa, int64 delta) {
+        private void LogMessage (MessageDirection direction, Type sender, Type destination, Message? messa, int64 delta) {
             var snd = sender.name ();
             var dst = destination.name ();
-            var mes = messa.get_type ().name ();
-            message (@"$snd -> $dst $mes $delta (microseconds)");
+            var mesName = "null";
+            if (messa != null) mesName = messa.get_type ().name ();            
+            var dr = direction == MessageDirection.IN_DIRECTION ? "->" : "<-";
+            message (@"$snd $dr $dst $mesName $delta (microseconds)");
         }
 
         /*
@@ -46,17 +51,19 @@ namespace  Aphelion {
         /*
         *   Sent to on message async
         */
-        private async void OnMessageInternal (RecepientData recepient, Type sender, Message message) {
+        private async Message? OnMessageInternal (RecepientData recepient, Type sender, Message messa) {            
             var start = get_real_time ();
-            recepient.OnMessage (sender, message);
+            var res = yield recepient.OnMessage.Run (sender, messa);
             var delta = get_real_time () - start;
-            LogMessage (sender, recepient.Recepient, message, delta);
+            LogMessage (MessageDirection.IN_DIRECTION, sender, recepient.Recepient, messa, 0);
+            LogMessage (MessageDirection.OUT_DIRECTION, sender, recepient.Recepient, res, delta);
+            return res;
         }
 
         /*
         *   Internal send
         */
-        private void SendInternal (Type sender, Type destination, Message messa) {
+        private async Message? SendInternal (Type sender, Type destination, Message messa) {            
             var dest = destination.name ();
             var mess = messa.get_type ().name ();
 
@@ -64,16 +71,16 @@ namespace  Aphelion {
             var recepientMap = _registeredMessages[mess];
             if (recepientMap == null) {                
                 message (@"$mess not found");
-                return;
+                return null;
             }
 
             var recepient = recepientMap[dest];
             if (recepient == null) {
                 message (@"Recepient $dest not found");
-                return;
+                return null;
             }
-            
-            OnMessageInternal.begin (recepient, sender, messa);                        
+                        
+            return yield OnMessageInternal (recepient, sender, messa);;                        
         } 
 
         /*
@@ -94,36 +101,37 @@ namespace  Aphelion {
             }
 
             // add recepient by address
-            recepientMap[addr] = new RecepientData (recType, onMessage);            
+            recepientMap[addr] = new RecepientData (recType, new AsyncMessageDelegate (onMessage));            
         }
 
         /*
         *   Send message to recepient
         */
-        public void Send (Type sender, Type destination, Message message) {
-            Idle.add(() => {
-                SendInternal (sender, destination, message);
-                return false;
-            });                        
+        public async Message Send (Type sender, Type destination, Message messa) {                       
+            return yield SendInternal (sender, destination, messa);                                                            
         }
 
         /*
         *   Send message to all who can recieve it
         */
-        public void SendBroadcast (Type sender, Message messa) {         
+        public async BroadcastResponse[] SendBroadcast (Type sender, Message messa) {                       
             var mess = messa.get_type ().name ();
+            var arr = new Gee.ArrayList<BroadcastResponse> ();
 
             // get recepients by message type
             var recepientMap = _registeredMessages[mess];
             if (recepientMap == null) {
                 // TODO debug
                 message (@"$mess not found");
-                return;
-            }
+                return arr.to_array ();
+            }            
 
             foreach (var rec in recepientMap.values) {                                
-                OnMessageInternal.begin (rec, sender, messa);
+                var dat = yield OnMessageInternal (rec, sender, messa);
+                arr.add (new BroadcastResponse (rec.Recepient, dat));                
             }
+
+            return arr.to_array ();
         }        
     }
 }

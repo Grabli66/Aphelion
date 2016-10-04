@@ -41,41 +41,42 @@ namespace  Aphelion {
         /*
         *   Return self type
         */
-        private void ReturnGetFileContentHandler (Type sender, Message data) {
-            var message = (GetFileContentHandlerMessage) data;
-            MessageDispatcher.GetInstance ().Send (this.get_type (), sender, new ReturnContentHandlerMessage (this.get_type ()));
+        private Message? ReturnGetFileContentHandler (Type sender, Message data) {
+            var message = (GetFileContentHandlerMessage) data;            
+            return new ReturnContentHandlerMessage (this.get_type ());
         } 
 
         /*
         *   Return file content
         */
-        private void ReturnGetFileContent (Type sender, Message data) {
-            if (_focusedPage == null) return;
-            if (!_focusedPage.Changed) return;
+        private Message? ReturnGetFileContent (Type sender, Message data) {
+            if (_focusedPage == null) return null;
+            if (!_focusedPage.Changed) return null;
             var message = (GetFileContentMessage) data;
             var content = _focusedPage.GetContent ();            
-            MessageDispatcher.GetInstance ().Send (this.get_type (), sender, new ReturnFileContentMessage (content));
+            return new ReturnFileContentMessage (content);
         }
 
         /*
         *   Set file content
         */
-        private void SetFileContent (Type sender, Message data) {
+        private Message? SetFileContent (Type sender, Message data) {
             var message = (SetFileContentMessage) data;
             var content = message.Content;
             AddSource (content.FilePath, content.Content);
+            return null;
         }        
 
         /*
         *   On content saved
         */
-        private void ContentSaved (Type sender, Message data) {
+        private Message? ContentSaved (Type sender, Message data) {
             var message = (FileSavedMessage) data;
             var page = _pages[message.Content.Id];                       
-            if (page == null) return;
+            if (page == null) return null;
             
             var content = message.Content as FileContent;
-            if (content == null) return;                                        
+            if (content == null) return null;                                        
             page.FilePath  = content.FilePath;
             if (page.IsTemp) {
                 _pages.remove (message.Content.Id);
@@ -83,7 +84,8 @@ namespace  Aphelion {
                 _tempCounter--;
             }
             page.IsTemp = false;
-            page.Changed  = false;                                                                   
+            page.Changed  = false;
+            return null;                                                                   
         }
 
         /*
@@ -132,17 +134,19 @@ namespace  Aphelion {
         /*
         *   Process CloseMessage
         */
-        private void ClosePage (Type sender, Message data) {
-            if (_focusedPage == null) return;            
+        private Message? ClosePage (Type sender, Message data) {
+            if (_focusedPage == null) return null;            
             RemovePage (_focusedPage);
+            return null;
         }
 
         /*
         *   Process new page
         */
-        private void NewPage (Type sender, Message data) {            
-            if (_focusedPage == null) return;            
+        private Message? NewPage (Type sender, Message data) {            
+            if (_focusedPage == null) return null;            
             AddSource (GetUntitledName (), "", true);
+            return null;
         }
 
         /*
@@ -165,7 +169,7 @@ namespace  Aphelion {
         /*
         *   Install component
         */
-        public override void Install () {
+        public override async void Install () {
             MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (Workspace), new PlaceWidgetMessage (_notebook));
         }        
     }

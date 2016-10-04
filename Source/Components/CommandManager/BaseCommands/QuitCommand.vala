@@ -6,7 +6,7 @@ namespace  Aphelion {
         /*
         *   Run command
         */        
-        public void Run () {
+        public async void Run () {
             Gtk.main_quit (); 
         }
     }   

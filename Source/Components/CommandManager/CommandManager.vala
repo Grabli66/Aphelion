@@ -35,13 +35,14 @@ namespace  Aphelion {
         /*
         *   Process key press
         */
-        private void KeyPress (Type sender, Message data) {
+        private Message? KeyPress (Type sender, Message data) {
             var messa = (KeyPressMessage) data;  
             //message (@"KeyPressed: $(messa.KeyCode)");
             var hash = Shortcut.CalcHash (messa.KeyCode, messa.IsCtrl, messa.IsShift, messa.IsAlt);
             var command = _commands[hash];
-            if (command == null) return;
+            if (command == null) return null;            
             command.Command.Run ();
+            return null;
         }
 
         /*

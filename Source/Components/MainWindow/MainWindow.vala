@@ -70,26 +70,28 @@ namespace  Aphelion {
         /*
         *   Set header of window
         */
-        private void SetHeaderWidget (Type sender, Message data) {
+        private Message? SetHeaderWidget (Type sender, Message data) {
             var message = (SetHeaderWidgetMessage)data;
             _mainWindow.set_titlebar (message.Header);
-            message.Header.show_all ();            
+            message.Header.show_all ();  
+            return null;          
         }
 
         /*
         *   Set root widget of window
         */
-        private void SetRootWidget (Type sender,Message data) {
+        private Message? SetRootWidget (Type sender,Message data) {
             var message = (SetRootWidgetMessage)data;
             _mainWindow.add (message.Widget);
-            message.Widget.show_all ();            
+            message.Widget.show_all ();
+            return null;            
         }
 
         /*
         *   Return self
         */
-        private void GetMainWindow (Type sender, Message data) {
-            MessageDispatcher.GetInstance ().Send (this.get_type (), sender, new ReturnWindowMessage (_mainWindow));            
+        private Message? GetMainWindow (Type sender, Message data) {            
+            return new ReturnWindowMessage (_mainWindow);            
         }
 
         /*
@@ -115,7 +117,7 @@ namespace  Aphelion {
         /*
         *   Place all visual items to other components
         */
-        public override void Install () {            
+        public override async void Install () {            
             /*
             *   Emit keyboard events
             */

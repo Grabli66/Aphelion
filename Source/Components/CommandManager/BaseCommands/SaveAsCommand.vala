@@ -4,43 +4,25 @@ namespace  Aphelion {
     */
     public class SaveAsCommand : Object, ICommand {
         /*
-        *   Content sender
-        */
-        private Type _contentSender;
-
-        /*
-        *   Process GetFileContentHandlerMessage
-        */
-        private void RecieveFileContentMessage (Type sender, Message data) {
-            var message = (ReturnFileContentMessage) data;
-            _contentSender = sender;
-            var content = message.Content as Content;
-            //MessageDispatcher.GetInstance ().Send (this.get_type (), typeof(FileDialog), new SaveAsFileMessage (content));
-        }
-        
-        /*
-        *   Process FileSavedMessage
-        */
-        private void FileSaved (Type sender, Message data) {
-            var message = (FileSavedMessage) data;
-            MessageDispatcher.GetInstance ().Send (this.get_type (), _contentSender, message); 
-        }     
-
-        /*
         *   Init command
         */
-        public void Init () {
-            var dispatcher = MessageDispatcher.GetInstance ();
-            // Register messages
-            dispatcher.Register (this, typeof (ReturnFileContentMessage), RecieveFileContentMessage);   
-            dispatcher.Register (this, typeof (FileSavedMessage), FileSaved);
+        public void Init () {           
         }
 
         /*
         *   Run command
         */        
-        public void Run () {
-            MessageDispatcher.GetInstance ().SendBroadcast (this.get_type (), new GetFileContentMessage ()); 
+        public async void Run () {
+            // Get content for save
+            var arr = yield MessageDispatcher.GetInstance ().SendBroadcast (this.get_type (), new GetFileContentMessage ());
+            var recepient = arr[0].Sender;
+            var contentMessage = (ReturnFileContentMessage) (arr[0]).Message;
+            
+            var content = contentMessage.Content as Content;
+            var fpm = (ReturnFilePathMessage) yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (FileDialog), new ShowFileDialogMessage (DialogOperation.SAVE));                                
+            var newContent = new FileContent (content.Id, fpm.FilePath, content.Content);
+            var fsm = (FileSavedMessage) yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (FileOperations), new SaveFileMessage (newContent));
+            yield MessageDispatcher.GetInstance ().Send (this.get_type (), recepient, fsm);             
         }          
     }   
 }

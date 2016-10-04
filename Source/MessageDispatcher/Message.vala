@@ -1,7 +1,12 @@
 namespace  Aphelion {
     /*
-    *   Abstract message
+    *   Delegate for get message
     */
-    public abstract class Message : Object {             
-    }
+    public delegate Message? OnMessageDelegate (Type sender, Message message);
+
+    /*
+    *   Abstract request
+    */
+    public abstract class Message : Object {
+    }    
 }

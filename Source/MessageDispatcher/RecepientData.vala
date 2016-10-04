@@ -11,9 +11,9 @@ namespace  Aphelion {
         /*
         *   Delegate for send message
         */
-        public OnMessageDelegate OnMessage { get; private set; }
+        public AsyncMessageDelegate OnMessage { get; private set; }
 
-        public RecepientData (Type recepient, OnMessageDelegate onMessage) {
+        public RecepientData (Type recepient, AsyncMessageDelegate onMessage) {
             Recepient = recepient;
             OnMessage = onMessage;
         }

@@ -6,7 +6,7 @@ namespace  Aphelion {
         /*
         *   Run command
         */        
-        public void Run () {
+        public async void Run () {
              MessageDispatcher.GetInstance ().SendBroadcast (this.get_type (), new NewMessage ()); 
         }
     }   

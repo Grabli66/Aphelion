@@ -11,7 +11,7 @@ namespace  Aphelion {
         /*
         *   Run command
         */        
-        public abstract void Run ();
+        public async abstract void Run ();
 
         /*
         *   Return description of command
