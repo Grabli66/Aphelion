@@ -7,7 +7,7 @@ namespace  Aphelion {
         *   Run internal
         */
         private async void RunInternal () {
-            yield MessageDispatcher.GetInstance ().SendBroadcast (this.get_type (), new NewMessage ());
+            yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (SourceEditor), new NewMessage ());
         }
 
         /*
