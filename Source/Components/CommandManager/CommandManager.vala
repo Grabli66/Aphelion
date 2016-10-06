@@ -6,7 +6,7 @@ namespace  Aphelion {
         /*
         *   Command
         */
-        public ICommand Command { get; private set; }
+        public Type Command { get; private set; }
 
         /*
         *   Shortcut
@@ -16,7 +16,7 @@ namespace  Aphelion {
         /*
         *   Constructor
         */
-        public CommandValue (ICommand command, Shortcut shortcut) {
+        public CommandValue (Type command, Shortcut shortcut) {
             this.Command = command;
             this.Shortcut = shortcut;
         }
@@ -28,27 +28,52 @@ namespace  Aphelion {
     */
     public class CommandManager : Component {
         /*
-        *   Commands
+        *   Binded commands to shortcut
         */
-        private Gee.HashMap<uint, CommandValue?> _commands = new Gee.HashMap<uint, CommandValue?> ();
+        private Gee.HashMap<uint, CommandValue?> _bindedCommands = new Gee.HashMap<uint, CommandValue?> ();
+
+        /*
+        *   Registered commands
+        */
+        private Gee.HashSet<Type> _registeredCommands = new Gee.HashSet<Type> ();
 
         /*
         *   Process key press
         */
         private Message? KeyPress (Type sender, Message data) {
-            var messa = (KeyPressMessage) data;  
-            //message (@"KeyPressed: $(messa.KeyCode)");
+            var messa = (KeyPressMessage) data;
             var hash = Shortcut.CalcHash (messa.KeyCode, messa.IsCtrl, messa.IsShift, messa.IsAlt);
-            var command = _commands[hash];
-            if (command == null) return null;            
-            command.Command.Run ();
+            var command = _bindedCommands[hash];
+            if (command != null) {            
+                MessageDispatcher.GetInstance ().Send.begin (this.get_type (), command.Command, new RunCommandMessage ());
+            }
+            return null;
+        }
+
+        /*
+        *   Process RegisterCommandMessage
+        */
+        private Message? RegisterCommand (Type sender, Message data) {
+            var messa = (RegisterCommandMessage) data;
+            _registeredCommands.add (messa.Command);
+            return null;
+        }
+
+        /*
+        *   Process BindShortcutMessage
+        */
+        private Message? BindShortcut (Type sender, Message data) {
+            var messa = (BindShortcutMessage) data;
+            if (_registeredCommands.contains (messa.Command)) {
+                _bindedCommands[messa.Shortcut.hash ()] = new CommandValue (messa.Command, messa.Shortcut);
+            }                        
             return null;
         }
 
         /*
         *   Add built in commands
         */
-        private void AddBuiltInCommands () {
+        /*private void AddBuiltInCommands () {
             var openShortcut = new Shortcut(32, true);
             var saveShortcut = new Shortcut(39, true); 
             var saveAsShortcut = new Shortcut(39, true, true);
@@ -65,7 +90,7 @@ namespace  Aphelion {
             foreach (var command in _commands.values) {
                 command.Command.Init ();
             }
-        }
+        }*/
 
         /*
         *   Create component items
@@ -73,9 +98,9 @@ namespace  Aphelion {
         public override void Init () {
             var dispatcher = MessageDispatcher.GetInstance ();
             // Register messages
-            dispatcher.Register (this, typeof (KeyPressMessage), KeyPress);            
-
-            AddBuiltInCommands ();
-        }        
+            dispatcher.Register (this, typeof (KeyPressMessage), KeyPress);
+            dispatcher.Register (this, typeof (RegisterCommandMessage), RegisterCommand);
+            dispatcher.Register (this, typeof (BindShortcutMessage), BindShortcut);
+        }
     }
 }

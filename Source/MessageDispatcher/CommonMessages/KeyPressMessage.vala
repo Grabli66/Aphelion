@@ -32,5 +32,12 @@ namespace  Aphelion {
             IsShift = isShift;
             IsAlt = isAlt;
         }
+
+        /*
+        *   Return log message
+        */
+        public override string ToLog () {
+            return @"KeyPressMessage : { KeyCode : $KeyCode, IsCtrl : $IsCtrl, IsShift : $IsShift, IsAlt : $IsAlt }";
+        }
     }    
 }

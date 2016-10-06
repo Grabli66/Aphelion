@@ -14,5 +14,12 @@ namespace  Aphelion {
         public OpenFileMessage (string filePath) {
             this.FilePath = filePath;
         }
+
+        /*
+        *   Return log message
+        */
+        public override string ToLog () {
+            return @"OpenFileMessage : { FilePath : $FilePath }";
+        }
     }
 }

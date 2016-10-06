@@ -65,6 +65,15 @@ namespace  Aphelion {
         }
 
         /*
+        *   Install all known components
+        */
+        public void InstallAll () {
+            foreach (var comp in _components.values) {
+                comp.Install ();
+            }
+        }
+
+        /*
         *   Load all components and start scene manager 
         */
         public void Load () {
@@ -77,6 +86,14 @@ namespace  Aphelion {
             Add (new CommandManager ());
             Add (new FileDialog ());
             Add (new FileOperations ());
+
+            // Commands
+            Add (new NewCommand ());
+            Add (new OpenCommand ());
+            Add (new SaveCommand ());
+            Add (new SaveAsCommand ());
+            Add (new CloseCommand ());
+            Add (new QuitCommand ());
 
             Init ();
             

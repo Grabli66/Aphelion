@@ -13,6 +13,13 @@ namespace  Aphelion {
         */
         public SetFileContentMessage (FileContent content) {
             this.Content = content;
-        }    
+        }
+
+        /*
+        *   Return log message
+        */
+        public override string ToLog () {
+            return @"SetFileContentMessage : { Id : $(Content.Id), FilePath : $(Content.FilePath) }";
+        }
     }
 }

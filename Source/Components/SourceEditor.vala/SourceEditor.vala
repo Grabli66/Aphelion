@@ -34,11 +34,6 @@ namespace  Aphelion {
         private SourcePage? _focusedPage;
 
         /*
-        *   Counter for temp page
-        */
-        private int _tempCounter = 1;
-
-        /*
         *   Return self type
         */
         private Message? ReturnGetFileContentHandler (Type sender, Message data) {
@@ -49,10 +44,10 @@ namespace  Aphelion {
         /*
         *   Return file content
         */
-        private Message? ReturnGetFileContent (Type sender, Message data) {
+        private Message? ReturnGetFileContent (Type sender, Message data) {            
             if (_focusedPage == null) return null;
-            if (!_focusedPage.Changed) return null;
-            var message = (GetFileContentMessage) data;
+            var messa = (GetFileContentMessage) data;            
+            if (messa.OnlyChanged && !_focusedPage.Changed) return null;            
             var content = _focusedPage.GetContent ();            
             return new ReturnFileContentMessage (content);
         }
@@ -77,11 +72,10 @@ namespace  Aphelion {
             
             var content = message.Content as FileContent;
             if (content == null) return null;                                        
-            page.FilePath  = content.FilePath;
-            if (page.IsTemp) {
+            page.FilePath  = content.FilePath;            
+            if (message.Content.Id != message.Content.FilePath) {
                 _pages.remove (message.Content.Id);
-                _pages[page.FilePath] = page;
-                _tempCounter--;
+                _pages[page.FilePath] = page;                
             }
             page.IsTemp = false;
             page.Changed  = false;
@@ -91,8 +85,13 @@ namespace  Aphelion {
         /*
         *   Get temp file name
         */
-        private string GetUntitledName () {
-            return @"Untitled-$(_tempCounter).vala";
+        private string GetUntitledName () {            
+            var i = 0;
+            while (true) {
+                var key = @"Untitled-$(i).vala";
+                if (!_pages.has_key (key)) return key;
+                i++;                
+            }                        
         }
 
         /*
@@ -100,11 +99,12 @@ namespace  Aphelion {
         */
         private void AddSource (string path, string data, bool isTemp = false) {
             var page = _pages[path];                        
-            if (page != null) return;
+            if (page != null) {
+                message (@"Page $path exists");
+                return;
+            }
 
-            page = new SourcePage (path, data, isTemp, _notebook);
-
-            if (isTemp) _tempCounter++;
+            page = new SourcePage (path, data, isTemp, _notebook);            
 
             page.OnFocusIn.connect ((e) => {                
                 _focusedPage = e;                
@@ -119,7 +119,9 @@ namespace  Aphelion {
             });
 
             _pages[path] = page;
-            _notebook.show_all ();            
+            var ind = _pages.size - 1;
+            _notebook.show_all ();
+            _notebook.set_current_page (ind);
         }
 
         /*
@@ -127,8 +129,7 @@ namespace  Aphelion {
         */
         private void RemovePage (SourcePage page) {
             _pages.remove (page.FilePath);
-            page.RemovePage ();
-            _tempCounter--;
+            page.RemovePage ();            
         }
 
         /*
@@ -143,8 +144,7 @@ namespace  Aphelion {
         /*
         *   Process new page
         */
-        private Message? NewPage (Type sender, Message data) {            
-            if (_focusedPage == null) return null;            
+        private Message? NewPage (Type sender, Message data) {
             AddSource (GetUntitledName (), "", true);
             return null;
         }
