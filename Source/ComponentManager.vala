@@ -86,6 +86,7 @@ namespace  Aphelion {
             Add (new CommandManager ());
             Add (new FileDialog ());
             Add (new FileOperations ());
+            Add (new Completion ());
 
             // Commands
             Add (new NewCommand ());

@@ -128,8 +128,14 @@ namespace  Aphelion {
         *   Remove page
         */
         private void RemovePage (SourcePage page) {
-            _pages.remove (page.FilePath);
-            page.RemovePage ();            
+            // Check for unsaved
+            if (page.Changed) {
+                // Send message for dialog
+                // Save, not save, cancel
+            } else {
+                _pages.remove (page.FilePath);
+                page.RemovePage ();
+            }            
         }
 
         /*

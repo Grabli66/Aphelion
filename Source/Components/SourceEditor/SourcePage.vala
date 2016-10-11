@@ -31,19 +31,14 @@ namespace Aphelion {
         /*
         *   Changed image
         */    
-        private Gtk.Image _changedImage;
-
-        /*
-        *   Source buffer
-        */
-        private Gtk.SourceBuffer _buffer;
+        private Gtk.Image _changedImage;        
         
         private bool _changed;
 
         /*
         *   Content changed
         */
-        internal bool Changed {
+        public bool Changed {
             get {
                 return _changed;
             }
@@ -58,7 +53,7 @@ namespace Aphelion {
         /*
         *   Caption of page
         */
-        internal string Caption { 
+        public string Caption { 
             get {
                 return _caption;
             } 
@@ -77,7 +72,7 @@ namespace Aphelion {
         /*
         *   Content file name
         */
-        internal string FilePath {
+        public string FilePath {
             get {
                 return _filePath;
             }
@@ -91,22 +86,27 @@ namespace Aphelion {
         /*
         *   Is temp
         */
-        internal bool IsTemp;    
+        public bool IsTemp; 
+
+        /*
+        *   Source buffer
+        */
+        public Gtk.SourceBuffer Buffer { get; private set; }
 
         /*
         *   Signal when close click
         */
-        internal signal void OnPageClose (SourcePage page);
+        public signal void OnPageClose (SourcePage page);
 
         /*
         *   Signal when focus in
         */
-        internal signal void OnFocusIn (SourcePage page);
+        public signal void OnFocusIn (SourcePage page);
 
         /*
         *   Signal when  focus out
         */
-        internal signal void OnFocusOut (SourcePage page);                  
+        public signal void OnFocusOut (SourcePage page);                  
 
         /*
         *   Create page with source
@@ -114,20 +114,21 @@ namespace Aphelion {
         private void CreatePage (string data) {
             var langManager = new Gtk.SourceLanguageManager();
             var lang = langManager.get_language ("vala");
-            _buffer = new Gtk.SourceBuffer.with_language (lang);
+            this.Buffer = new Gtk.SourceBuffer.with_language (lang);
             var styleManager = new Gtk.SourceStyleSchemeManager ();
             styleManager.append_search_path (".");
             var styleScheme = styleManager.get_scheme ("vscode");
-            _buffer.set_style_scheme (styleScheme);
-            _buffer.set_text (data);            
+            this.Buffer.set_style_scheme (styleScheme);
+            this.Buffer.set_text (data);            
 
-            var view = new Gtk.SourceView.with_buffer (_buffer);
+            var view = new Gtk.SourceView.with_buffer (this.Buffer);
             view.highlight_current_line = true;
             view.auto_indent = true;
             view.show_line_numbers = true;
             view.left_margin = SourceEditor.LEFT_MARGIN;
             view.pixels_above_lines = SourceEditor.LINE_MARGIN;
             view.tab_width = SourceEditor.DEFAULT_TAB_WIDTH;
+            view.completion.add_provider (new CompletionProvider (this));
 
             _rootWidget = new Gtk.ScrolledWindow (null, null);
             _rootWidget.add (view);
@@ -170,7 +171,7 @@ namespace Aphelion {
                 return false;
             });
 
-            _buffer.changed.connect (() => {                
+            this.Buffer.changed.connect (() => {                
                 Changed = true;
             });
         }
@@ -187,10 +188,10 @@ namespace Aphelion {
         */
         internal Content GetContent () {
             if (IsTemp) {
-                return new Content (_caption, _buffer.text);
+                return new Content (_caption, this.Buffer.text);
             }
 
-            return new FileContent (_filePath, _filePath, _buffer.text);
+            return new FileContent (_filePath, _filePath, this.Buffer.text);
         }
 
         /*
