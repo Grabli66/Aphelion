@@ -44,7 +44,12 @@ namespace  Aphelion {
         *   Root widget
         */        
         private Gtk.Window _mainWindow;
-       
+
+        /*
+        *   Overlay
+        */
+        private Gtk.Overlay _mainOverlay;
+
         /*
         *   Set main window settings
         */
@@ -76,15 +81,25 @@ namespace  Aphelion {
             message.Header.show_all ();  
             return null;          
         }
-
+        
         /*
         *   Set root widget of window
         */
-        private Message? SetRootWidget (Type sender,Message data) {
-            var message = (SetRootWidgetMessage)data;
-            _mainWindow.add (message.Widget);
-            message.Widget.show_all ();
+        private Message? SetRootWidget (Type sender,Message data) {            
+            var messa = (SetRootWidgetMessage)data;
+            _mainOverlay.add (messa.Widget);                        
+            messa.Widget.show_all ();            
             return null;            
+        }
+
+        /*
+        *   Process SetOverlayWidgetMessage
+        */
+        private Message? SetOverlayWindow (Type sender, Message data) {
+            var messa = (SetOverlayWidgetMessage)data;
+            _mainOverlay.add_overlay (messa.Widget);
+            _mainOverlay.set_overlay_pass_through (messa.Widget, true);
+            return null;
         }
 
         /*
@@ -103,15 +118,19 @@ namespace  Aphelion {
         *   Create component items
         */
         public override void Init () {
-            _mainWindow =  new Gtk.Window ();                        
+            _mainWindow =  new Gtk.Window ();
+            _mainOverlay = new Gtk.Overlay ();
+            _mainWindow.add (_mainOverlay);
+
             SetWindowSettings ();            
-            SetMainStyle ();            
+            SetMainStyle ();
 
             var dispatcher = MessageDispatcher.GetInstance ();
-            // Register messages            
+            // Register messages
             dispatcher.Register (this, typeof (SetHeaderWidgetMessage), SetHeaderWidget);
             dispatcher.Register (this, typeof (SetRootWidgetMessage), SetRootWidget);
             dispatcher.Register (this, typeof (GetMainWindowMessage), GetMainWindow);
+            dispatcher.Register (this, typeof (SetOverlayWidgetMessage), SetOverlayWindow);
         }
 
         /*

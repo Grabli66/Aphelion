@@ -84,6 +84,7 @@ namespace  Aphelion {
             Add (new Workspace ());
             Add (new SourceEditor ());
             Add (new CommandManager ());
+            Add (new CommandPanel ());
             Add (new FileDialog ());
             Add (new FileOperations ());
             Add (new Completion ());
@@ -95,6 +96,7 @@ namespace  Aphelion {
             Add (new SaveAsCommand ());
             Add (new CloseCommand ());
             Add (new QuitCommand ());
+            Add (new ShowHideCommandPanelCommand ());
 
             Init ();
             
