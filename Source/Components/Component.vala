@@ -12,5 +12,10 @@ namespace Aphelion {
         *   Install component
         */
         public async virtual void Install () {}
+
+        /*
+        *   After install all components
+        */
+        public async virtual void AfterInstall () {}
     }
 }

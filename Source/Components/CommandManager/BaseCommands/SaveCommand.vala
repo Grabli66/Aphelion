@@ -4,6 +4,16 @@ namespace  Aphelion {
     */
     public class SaveCommand : Component {
         /*
+        *   Command name
+        */  
+        private const string NAME = "Save document";
+
+        /*
+        *   Command description
+        */  
+        private const string DESCRIPTION = "Save document";
+
+        /*
         *   Run internal
         */
         private async void RunInternal () {
@@ -50,7 +60,8 @@ namespace  Aphelion {
         */
         public override async void Install () {
             var thisType = this.get_type ();
-            yield MessageDispatcher.GetInstance ().Send (thisType, typeof (CommandManager), new RegisterCommandMessage (thisType));
+            yield MessageDispatcher.GetInstance ().Send (thisType, typeof (CommandManager), 
+                                    new RegisterCommandMessage (new CommandInfo (thisType, NAME, DESCRIPTION)));
             // Todo bind from settings
             yield MessageDispatcher.GetInstance ().Send (thisType, typeof (CommandManager), new BindShortcutMessage (new Shortcut(39, true), thisType));
         }      

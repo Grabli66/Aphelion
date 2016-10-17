@@ -6,6 +6,7 @@ namespace  Aphelion {
         public const string DEFAULT_ID = "MainWindow";
 
         // TODO: load theme from settings
+        // TODO: get custom styles from components
         private const string CSS_MAIN = """
         GtkSourceView {
             font-family: 'Courier New';
@@ -37,6 +38,12 @@ namespace  Aphelion {
 
         .button-icon:hover {
             background: #353840;
+        }
+
+        .command-panel {
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3), 0 5px 5px rgba(0, 0, 0, 0.22);
+            border: 1px solid #151515;
+            font-size: 10px;
         }
         """;
 
@@ -98,7 +105,7 @@ namespace  Aphelion {
         private Message? SetOverlayWindow (Type sender, Message data) {
             var messa = (SetOverlayWidgetMessage)data;
             _mainOverlay.add_overlay (messa.Widget);
-            _mainOverlay.set_overlay_pass_through (messa.Widget, true);
+            //_mainOverlay.set_overlay_pass_through (messa.Widget, true);
             return null;
         }
 

@@ -6,13 +6,13 @@ namespace  Aphelion {
         /*
         *   Command to register
         */
-        public Type Command { get; private set; }
+        public CommandInfo CommandInfo { get; private set; }        
 
         /*
         *   Constructor
         */
-        public RegisterCommandMessage (Type command) {
-            this.Command = command;
+        public RegisterCommandMessage (CommandInfo command) {
+            this.CommandInfo = command;
         }
     }
 }

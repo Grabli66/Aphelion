@@ -4,6 +4,16 @@ namespace  Aphelion {
     */
     public class OpenCommand : Component { 
         /*
+        *   Command name
+        */  
+        private const string NAME = "Open document";
+
+        /*
+        *   Command description
+        */  
+        private const string DESCRIPTION = "Open document";
+
+        /*
         *   Run internal
         */
         private async void RunInternal () {
@@ -39,7 +49,9 @@ namespace  Aphelion {
         */
         public override async void Install () {
             var thisType = this.get_type ();
-            yield MessageDispatcher.GetInstance ().Send (thisType, typeof (CommandManager), new RegisterCommandMessage (thisType));
+            yield MessageDispatcher.GetInstance ().Send (thisType, typeof (CommandManager), 
+                                    new RegisterCommandMessage (new CommandInfo (thisType, NAME, DESCRIPTION)));
+                                    
             // Todo bind from settings
             yield MessageDispatcher.GetInstance ().Send (thisType, typeof (CommandManager), new BindShortcutMessage (new Shortcut(32, true), thisType));
         }       

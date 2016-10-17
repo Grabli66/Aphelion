@@ -4,6 +4,16 @@ namespace  Aphelion {
     */
     public class QuitCommand : Component {
         /*
+        *   Command name
+        */  
+        private const string NAME = "Quit from IDE";
+
+        /*
+        *   Command description
+        */  
+        private const string DESCRIPTION = "Quit from IDE";
+
+        /*
         *   Run command
         */        
         private Message? Run (Type sender, Message data) {
@@ -29,7 +39,8 @@ namespace  Aphelion {
         */
         public override async void Install () {
             var thisType = this.get_type ();
-            yield MessageDispatcher.GetInstance ().Send (thisType, typeof (CommandManager), new RegisterCommandMessage (thisType));
+            yield MessageDispatcher.GetInstance ().Send (thisType, typeof (CommandManager), 
+                                    new RegisterCommandMessage (new CommandInfo (thisType, NAME, DESCRIPTION)));
             // Todo bind from settings
             yield MessageDispatcher.GetInstance ().Send (thisType, typeof (CommandManager), new BindShortcutMessage (new Shortcut(24, true), thisType));
         }

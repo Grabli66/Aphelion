@@ -71,6 +71,10 @@ namespace  Aphelion {
             foreach (var comp in _components.values) {
                 comp.Install ();
             }
+
+            foreach (var comp in _components.values) {
+                comp.AfterInstall ();
+            }
         }
 
         /*
@@ -90,7 +94,7 @@ namespace  Aphelion {
             Add (new Completion ());
 
             // Commands
-            Add (new NewCommand ());
+            Add (new NewDocumentCommand ());
             Add (new OpenCommand ());
             Add (new SaveCommand ());
             Add (new SaveAsCommand ());

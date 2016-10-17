@@ -2,7 +2,17 @@ namespace  Aphelion {
     /*
     *   Command for something new 
     */
-    public class NewCommand : Component {       
+    public class NewDocumentCommand : Component {   
+        /*
+        *   Command name
+        */  
+        private const string NAME = "Create new document";
+
+        /*
+        *   Command description
+        */  
+        private const string DESCRIPTION = "Create new document";
+
         /*
         *   Run internal
         */
@@ -32,7 +42,8 @@ namespace  Aphelion {
         */
         public override async void Install () {
             var thisType = this.get_type ();
-            yield MessageDispatcher.GetInstance ().Send (thisType, typeof (CommandManager), new RegisterCommandMessage (thisType));
+            yield MessageDispatcher.GetInstance ().Send (thisType, typeof (CommandManager), 
+                                    new RegisterCommandMessage (new CommandInfo (thisType, NAME, DESCRIPTION)));
             // Todo bind from settings
             yield MessageDispatcher.GetInstance ().Send (thisType, typeof (CommandManager), new BindShortcutMessage (new Shortcut(57, true), thisType));
         }
