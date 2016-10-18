@@ -45,6 +45,15 @@ namespace  Aphelion {
             border: 1px solid #151515;
             font-size: 10px;
         }
+
+        .command-panel GtkListBox {
+            background: rgb (38, 38, 38);
+        }
+
+        .command-panel .list-row {
+            padding: 5px 5px 5px 10px;
+        }
+
         """;
 
         /*
