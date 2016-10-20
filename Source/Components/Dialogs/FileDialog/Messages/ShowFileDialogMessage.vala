@@ -6,12 +6,12 @@ namespace  Aphelion {
         /*
         *   Dialog operation
         */
-        public DialogOperation Operation { get; private set; }
+        public FileDialogOperation Operation { get; private set; }
 
         /*
         * Constructor
         */
-        public ShowFileDialogMessage (DialogOperation operation) {
+        public ShowFileDialogMessage (FileDialogOperation operation) {
             this.Operation = operation;
         }
     }

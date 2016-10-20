@@ -34,11 +34,7 @@ namespace  Aphelion {
             border-style: none;
             box-shadow: none;
             padding: 5px;
-        }
-
-        .button-icon:hover {
-            background: #353840;
-        }
+        }        
 
         .command-panel {
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3), 0 5px 5px rgba(0, 0, 0, 0.22);

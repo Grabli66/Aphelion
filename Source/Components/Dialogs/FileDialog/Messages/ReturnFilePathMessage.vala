@@ -11,12 +11,12 @@ namespace  Aphelion {
         /*
         *   Operation
         */
-        public DialogOperation Operation { get; private set; }
+        public FileDialogOperation Operation { get; private set; }
 
         /*
         *   Constructor
         */ 
-        public ReturnFilePathMessage (string filePath, DialogOperation operation) {
+        public ReturnFilePathMessage (string filePath, FileDialogOperation operation) {
             FilePath = filePath;
             Operation = operation;
         }

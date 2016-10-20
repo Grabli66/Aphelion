@@ -1,8 +1,8 @@
 namespace  Aphelion {
     /*
-    *   File dialog component for open/save files
+    *   Dialog for open/save file
     */
-    public class FileDialog : Component {
+    public class FileDialog : Object, IDialog {
         public const string OPEN_FILE_NAME = "Open File";
         public const string SAVE_FILE_NAME = "Save File";
         public const string SAVE_AS_FILE_NAME = "Save As File";
@@ -10,30 +10,17 @@ namespace  Aphelion {
         /*
         *   Main window
         */
-        private Gtk.Window _mainWindow;
+        private Gtk.Window _mainWindow { get; private set; }
 
         /*
-        *   Process ShowFileDialogMessage
+        *   Dialog operation: open, save
         */
-        private Message? ShowDialog (Type sender, Message data) {            
-            var message = (ShowFileDialogMessage) data;
-            switch (message.Operation) {
-                case DialogOperation.OPEN:
-                    return OpenFile (sender, message); 
-                    break;
-                case DialogOperation.SAVE:
-                    return SaveFile (sender, message);
-                    break;
-            default:
-                break;
-            }
-            return null;
-        }
+        private FileDialogOperation Operation { get; private set; }
 
         /*
         *   Show open file dialog
         */
-        private Message? OpenFile (Type sender, ShowFileDialogMessage message) {
+        private Message? OpenFile () {
             var fileChooser = new Gtk.FileChooserDialog (OPEN_FILE_NAME, _mainWindow,
                                       Gtk.FileChooserAction.OPEN, 
                                       "_Cancel",
@@ -54,7 +41,7 @@ namespace  Aphelion {
 
             if (fileChooser.run () == Gtk.ResponseType.ACCEPT) {
                 var filePath = fileChooser.get_filename ();                
-                res = new ReturnFilePathMessage (filePath, DialogOperation.OPEN);
+                res = new ReturnFilePathMessage (filePath, FileDialogOperation.OPEN);
             }   
 
             fileChooser.destroy ();
@@ -64,7 +51,7 @@ namespace  Aphelion {
         /*
         *   Show save as dialog
         */
-        private Message? SaveFile (Type sender, ShowFileDialogMessage message) {
+        private Message? SaveFile () {
             var fileChooser = new Gtk.FileChooserDialog (SAVE_AS_FILE_NAME, _mainWindow,
                                       Gtk.FileChooserAction.SAVE, 
                                       "_Cancel",
@@ -85,28 +72,37 @@ namespace  Aphelion {
 
             if (fileChooser.run () == Gtk.ResponseType.ACCEPT) {
                 var filePath = fileChooser.get_filename ();                   
-                res = new ReturnFilePathMessage (filePath, DialogOperation.SAVE);                                                                                        
+                res = new ReturnFilePathMessage (filePath, FileDialogOperation.SAVE);                                                                                        
             }   
 
             fileChooser.destroy ();
-            return res;
-        }
-         
-        /*
-        *   Create component items
-        */
-        public override void Init () {
-            var dispatcher = MessageDispatcher.GetInstance ();
-            // Register messages            
-            dispatcher.Register (this, typeof (ShowFileDialogMessage), ShowDialog);
+            return res;            
         }
 
         /*
-        *   Place all visual items to other components
+        *   Constructor
         */
-        public override async void Install () {
-             var res = (ReturnWindowMessage) yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (MainWindow), new GetMainWindowMessage ());
-             _mainWindow = res.MainWindow;
+        public FileDialog (Gtk.Window mainWindow, FileDialogOperation operation) {
+            this._mainWindow = mainWindow;
+            this.Operation = operation;
+        }
+
+        /*
+        *   Show dialog and return message
+        */
+        public Message? ShowWithResult () {
+            switch (Operation) {
+                case FileDialogOperation.OPEN:
+                    return OpenFile (); 
+                    break;
+                case FileDialogOperation.SAVE:
+                    return SaveFile ();
+                    break;
+            default:
+                break;
+            }
+
+            return null;
         }
     }
 }

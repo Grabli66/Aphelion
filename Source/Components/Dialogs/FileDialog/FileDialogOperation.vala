@@ -2,7 +2,7 @@ namespace  Aphelion {
     /*
     *   Dialog operations
     */
-    public enum DialogOperation {
+    public enum FileDialogOperation {
         OPEN,
         SAVE;        
     }

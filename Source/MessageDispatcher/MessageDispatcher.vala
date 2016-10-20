@@ -38,7 +38,7 @@ namespace  Aphelion {
             var mesName = "null";
             if (messa != null) mesName = messa.ToLog ();            
             var dr = direction == MessageDirection.IN_DIRECTION ? "->" : "<-";
-            message (@"$snd $dr $dst $mesName $delta (microseconds)");
+            message (@"$snd $dr $dst $mesName ($delta microseconds)");
         }
 
         /*

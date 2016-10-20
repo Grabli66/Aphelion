@@ -89,6 +89,7 @@ namespace  Aphelion {
             var i = 0;
             while (true) {
                 var key = @"Untitled-$(i).vala";
+                if (i == 0) key = "Untitled.vala";                 
                 if (!_pages.has_key (key)) return key;
                 i++;                
             }                        
@@ -111,7 +112,8 @@ namespace  Aphelion {
             });
 
             page.OnFocusOut.connect ((e) => {
-                _focusedPage = null;
+                // TODO save page when show dialog
+                //_focusedPage = null;
             });
 
             page.OnPageClose.connect ((e) => {
@@ -125,13 +127,30 @@ namespace  Aphelion {
         }
 
         /*
+        *   Remove page with unsaved content
+        */
+        private async void RemoveUnsaved () {
+            var messa = (ReturnMessageDialogResultMessage) yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (Dialogs), new ShowMessageDialogMessage ());
+            switch (messa.Result) {
+                case MessageDialogResult.OK:                    
+                    yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (SaveDocumentCommand), new RunCommandMessage ());                    
+                    break;
+                case MessageDialogResult.CANCEL:
+                    break;
+            default:
+                break;
+            }
+        }
+
+        /*
         *   Remove page
         */
         private void RemovePage (SourcePage page) {
             // Check for unsaved
-            if (page.Changed) {
+            if (page.Changed) {                 
                 // Send message for dialog
                 // Save, not save, cancel
+                RemoveUnsaved.begin ();
             } else {
                 _pages.remove (page.FilePath);
                 page.RemovePage ();

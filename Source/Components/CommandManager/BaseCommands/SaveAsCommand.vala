@@ -23,7 +23,8 @@ namespace  Aphelion {
             var contentMessage = (ReturnFileContentMessage) (arr[0]).Message;
             
             var content = contentMessage.Content as Content;
-            var fpm = (ReturnFilePathMessage) yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (FileDialog), new ShowFileDialogMessage (DialogOperation.SAVE));
+            var fpm = (ReturnFilePathMessage) yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (Dialogs), 
+                                                                                            new ShowFileDialogMessage (FileDialogOperation.SAVE));
             if (fpm == null) return;
 
             var newContent = new FileContent (content.Id, fpm.FilePath, content.Content);

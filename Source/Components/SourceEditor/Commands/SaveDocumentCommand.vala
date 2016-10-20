@@ -1,8 +1,8 @@
 namespace  Aphelion {
     /*
-    *   Save command 
+    *   Save document command 
     */
-    public class SaveCommand : Component {
+    public class SaveDocumentCommand : Component {
         /*
         *   Command name
         */  
@@ -18,16 +18,16 @@ namespace  Aphelion {
         */
         private async void RunInternal () {
             // Get content for save
-            var arr = yield MessageDispatcher.GetInstance ().SendBroadcast (this.get_type (), new GetFileContentMessage (true));
-            var recepient = arr[0].Sender;
-            var contentMessage = (ReturnFileContentMessage) (arr[0]).Message;
+            var recepient = typeof (SourceEditor);
+            var contentMessage = (ReturnFileContentMessage) yield MessageDispatcher.GetInstance ().Send (this.get_type (), recepient, new GetFileContentMessage (true));                        
 
             FileContent? fileContent = null;
 
             if (contentMessage.Content is FileContent) {
                 fileContent = contentMessage.Content as FileContent;                                
             } else if (contentMessage.Content is Content) {                
-                var fpm = (ReturnFilePathMessage) yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (FileDialog), new ShowFileDialogMessage (DialogOperation.SAVE));
+                var fpm = (ReturnFilePathMessage) yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (Dialogs), 
+                                                                                                new ShowFileDialogMessage (FileDialogOperation.SAVE));
                 if (fpm == null) return; 
                 var content = contentMessage.Content as Content;
                 fileContent = new FileContent (content.Id, fpm.FilePath, content.Content);                
