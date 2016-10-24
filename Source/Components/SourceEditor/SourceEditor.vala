@@ -130,14 +130,14 @@ namespace  Aphelion {
         *   Remove page with unsaved content
         */
         private async void RemoveUnsaved (SourcePage page) {
-            var messa = (ReturnMessageDialogResultMessage) yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (Dialogs), 
+            var messa = (ReturnMessageDialogResultMessage) yield MessageDispatcher.Send (this.get_type (), typeof (Dialogs), 
                          new ShowMessageDialogMessage ("Do you want to save the changes?").
                          AddButton ("_Don't save", MessageDialogResult.CLOSE).                         
                          AddButton ("_Cancel", MessageDialogResult.CANCEL).
                          AddButton ("_Save", MessageDialogResult.OK));
             switch (messa.Result) {
                 case MessageDialogResult.OK:                    
-                    yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (SaveDocumentCommand), new RunCommandMessage ());                    
+                    yield MessageDispatcher.Send (this.get_type (), typeof (SaveDocumentCommand), new RunCommandMessage ());                    
                     break;
                 case MessageDialogResult.CANCEL:
                     break;
@@ -187,21 +187,20 @@ namespace  Aphelion {
             _notebook = new Gtk.Notebook ();
             AddSource (GetUntitledName (), "", true);
 
-            var dispatcher = MessageDispatcher.GetInstance ();
             // Register messages
-            dispatcher.Register (this, typeof (GetFileContentHandlerMessage), ReturnGetFileContentHandler);
-            dispatcher.Register (this, typeof (SetFileContentMessage), SetFileContent);
-            dispatcher.Register (this, typeof (GetFileContentMessage), ReturnGetFileContent);
-            dispatcher.Register (this, typeof (FileSavedMessage), ContentSaved);
-            dispatcher.Register (this, typeof (CloseMessage), ClosePage);
-            dispatcher.Register (this, typeof (NewMessage), NewPage);
+            MessageDispatcher.Register (this, typeof (GetFileContentHandlerMessage), ReturnGetFileContentHandler);
+            MessageDispatcher.Register (this, typeof (SetFileContentMessage), SetFileContent);
+            MessageDispatcher.Register (this, typeof (GetFileContentMessage), ReturnGetFileContent);
+            MessageDispatcher.Register (this, typeof (FileSavedMessage), ContentSaved);
+            MessageDispatcher.Register (this, typeof (CloseMessage), ClosePage);
+            MessageDispatcher.Register (this, typeof (NewMessage), NewPage);
         }
 
         /*
         *   Install component
         */
         public override async void Install () {
-            MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (Workspace), new PlaceWidgetMessage (_notebook));
+            MessageDispatcher.Send (this.get_type (), typeof (Workspace), new PlaceWidgetMessage (_notebook));
         }        
     }
 }

@@ -19,14 +19,14 @@ namespace  Aphelion {
         private async void RunInternal () {
             // Get content for save
             var recepient = typeof (SourceEditor);
-            var contentMessage = (ReturnFileContentMessage) yield MessageDispatcher.GetInstance ().Send (this.get_type (), recepient, new GetFileContentMessage (true));                        
+            var contentMessage = (ReturnFileContentMessage) yield MessageDispatcher.Send (this.get_type (), recepient, new GetFileContentMessage (true));                        
 
             FileContent? fileContent = null;
 
             if (contentMessage.Content is FileContent) {
                 fileContent = contentMessage.Content as FileContent;                                
             } else if (contentMessage.Content is Content) {                
-                var fpm = (ReturnFilePathMessage) yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (Dialogs), 
+                var fpm = (ReturnFilePathMessage) yield MessageDispatcher.Send (this.get_type (), typeof (Dialogs), 
                                                                                                 new ShowFileDialogMessage (FileDialogOperation.SAVE));
                 if (fpm == null) return; 
                 var content = contentMessage.Content as Content;
@@ -34,8 +34,8 @@ namespace  Aphelion {
             }
 
             if (fileContent == null) return;
-            var fsm = (FileSavedMessage) yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (FileOperations), new SaveFileMessage (fileContent));
-            yield MessageDispatcher.GetInstance ().Send (this.get_type (), recepient, fsm);  
+            var fsm = (FileSavedMessage) yield MessageDispatcher.Send (this.get_type (), typeof (FileOperations), new SaveFileMessage (fileContent));
+            yield MessageDispatcher.Send (this.get_type (), recepient, fsm);  
         }
 
         /*
@@ -50,9 +50,8 @@ namespace  Aphelion {
         *   Create component items
         */
         public override void Init () {
-            var dispatcher = MessageDispatcher.GetInstance ();
             // Register messages            
-            dispatcher.Register (this, typeof (RunCommandMessage), Run);
+            MessageDispatcher.Register (this, typeof (RunCommandMessage), Run);
         }
 
         /*
@@ -60,10 +59,10 @@ namespace  Aphelion {
         */
         public override async void Install () {
             var thisType = this.get_type ();
-            yield MessageDispatcher.GetInstance ().Send (thisType, typeof (CommandManager), 
+            yield MessageDispatcher.Send (thisType, typeof (CommandManager), 
                                     new RegisterCommandMessage (new CommandInfo (thisType, NAME, DESCRIPTION)));
             // Todo bind from settings
-            yield MessageDispatcher.GetInstance ().Send (thisType, typeof (CommandManager), new BindShortcutMessage (new Shortcut(39, true), thisType));
+            yield MessageDispatcher.Send (thisType, typeof (CommandManager), new BindShortcutMessage (new Shortcut(39, true), thisType));
         }      
     }   
 }

@@ -18,18 +18,18 @@ namespace  Aphelion {
         */
         private async void RunInternal () {
             // Get content for save
-            var arr = yield MessageDispatcher.GetInstance ().SendBroadcast (this.get_type (), new GetFileContentMessage (false));
+            var arr = yield MessageDispatcher.SendBroadcast (this.get_type (), new GetFileContentMessage (false));
             var recepient = arr[0].Sender;
             var contentMessage = (ReturnFileContentMessage) (arr[0]).Message;
             
             var content = contentMessage.Content as Content;
-            var fpm = (ReturnFilePathMessage) yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (Dialogs), 
+            var fpm = (ReturnFilePathMessage) yield MessageDispatcher.Send (this.get_type (), typeof (Dialogs), 
                                                                                             new ShowFileDialogMessage (FileDialogOperation.SAVE));
             if (fpm == null) return;
 
             var newContent = new FileContent (content.Id, fpm.FilePath, content.Content);
-            var fsm = (FileSavedMessage) yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (FileOperations), new SaveFileMessage (newContent));
-            yield MessageDispatcher.GetInstance ().Send (this.get_type (), recepient, fsm);  
+            var fsm = (FileSavedMessage) yield MessageDispatcher.Send (this.get_type (), typeof (FileOperations), new SaveFileMessage (newContent));
+            yield MessageDispatcher.Send (this.get_type (), recepient, fsm);  
         }
 
         /*
@@ -44,9 +44,8 @@ namespace  Aphelion {
         *   Create component items
         */
         public override void Init () {
-            var dispatcher = MessageDispatcher.GetInstance ();
             // Register messages            
-            dispatcher.Register (this, typeof (RunCommandMessage), Run);
+            MessageDispatcher.Register (this, typeof (RunCommandMessage), Run);
         }
 
         /*
@@ -54,10 +53,10 @@ namespace  Aphelion {
         */
         public override async void Install () {
             var thisType = this.get_type ();
-            yield MessageDispatcher.GetInstance ().Send (thisType, typeof (CommandManager), 
+            yield MessageDispatcher.Send (thisType, typeof (CommandManager), 
                                     new RegisterCommandMessage (new CommandInfo (thisType, NAME, DESCRIPTION)));
             // Todo bind from settings
-            yield MessageDispatcher.GetInstance ().Send (thisType, typeof (CommandManager), new BindShortcutMessage (new Shortcut(39, true, true), thisType));
+            yield MessageDispatcher.Send (thisType, typeof (CommandManager), new BindShortcutMessage (new Shortcut(39, true, true), thisType));
         }          
     }   
 }

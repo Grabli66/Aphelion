@@ -136,13 +136,12 @@ namespace  Aphelion {
 
             SetWindowSettings ();            
             SetMainStyle ();
-
-            var dispatcher = MessageDispatcher.GetInstance ();
+            
             // Register messages
-            dispatcher.Register (this, typeof (SetHeaderWidgetMessage), SetHeaderWidget);
-            dispatcher.Register (this, typeof (SetRootWidgetMessage), SetRootWidget);
-            dispatcher.Register (this, typeof (GetMainWindowMessage), GetMainWindow);
-            dispatcher.Register (this, typeof (SetOverlayWidgetMessage), SetOverlayWindow);
+            MessageDispatcher.Register (this, typeof (SetHeaderWidgetMessage), SetHeaderWidget);
+            MessageDispatcher.Register (this, typeof (SetRootWidgetMessage), SetRootWidget);
+            MessageDispatcher.Register (this, typeof (GetMainWindowMessage), GetMainWindow);
+            MessageDispatcher.Register (this, typeof (SetOverlayWidgetMessage), SetOverlayWindow);
         }
 
         /*
@@ -156,7 +155,7 @@ namespace  Aphelion {
                 var isCtrl = (e.state & Gdk.ModifierType.CONTROL_MASK) > 0;
                 var isShift = (e.state & Gdk.ModifierType.SHIFT_MASK) > 0;
                 var isAlt = (e.state & Gdk.ModifierType.MOD1_MASK) > 0;
-                MessageDispatcher.GetInstance ().SendBroadcast (this.get_type (), new KeyPressMessage (e.hardware_keycode, isCtrl, isShift, isAlt));
+                MessageDispatcher.SendBroadcast (this.get_type (), new KeyPressMessage (e.hardware_keycode, isCtrl, isShift, isAlt));
                 return false;
             });
 

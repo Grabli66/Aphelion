@@ -29,10 +29,9 @@ namespace  Aphelion {
         *   Create component items
         */
         public override void Init () {
-            var dispatcher = MessageDispatcher.GetInstance ();
             // Register messages
-            dispatcher.Register (this, typeof (SaveFileMessage), SaveFile); 
-            dispatcher.Register (this, typeof (OpenFileMessage), OpenFile);
+            MessageDispatcher.Register (this, typeof (SaveFileMessage), SaveFile); 
+            MessageDispatcher.Register (this, typeof (OpenFileMessage), OpenFile);
         }
     }
 }

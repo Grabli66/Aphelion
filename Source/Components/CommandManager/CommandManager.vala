@@ -45,7 +45,7 @@ namespace  Aphelion {
             var hash = Shortcut.CalcHash (messa.KeyCode, messa.IsCtrl, messa.IsShift, messa.IsAlt);
             var command = _bindedCommands[hash];
             if (command != null) {            
-                MessageDispatcher.GetInstance ().Send.begin (this.get_type (), command.CommandInfo.Command, new RunCommandMessage ());
+                MessageDispatcher.Send.begin (this.get_type (), command.CommandInfo.Command, new RunCommandMessage ());
             }
             return null;
         }
@@ -80,13 +80,12 @@ namespace  Aphelion {
         /*
         *   Create component items
         */
-        public override void Init () {
-            var dispatcher = MessageDispatcher.GetInstance ();
+        public override void Init () {            
             // Register messages
-            dispatcher.Register (this, typeof (KeyPressMessage), KeyPress);
-            dispatcher.Register (this, typeof (RegisterCommandMessage), RegisterCommand);
-            dispatcher.Register (this, typeof (BindShortcutMessage), BindShortcut);
-            dispatcher.Register (this, typeof (GetCommandsMessage), ReturnCommands);            
+            MessageDispatcher.Register (this, typeof (KeyPressMessage), KeyPress);
+            MessageDispatcher.Register (this, typeof (RegisterCommandMessage), RegisterCommand);
+            MessageDispatcher.Register (this, typeof (BindShortcutMessage), BindShortcut);
+            MessageDispatcher.Register (this, typeof (GetCommandsMessage), ReturnCommands);            
         }
     }
 }

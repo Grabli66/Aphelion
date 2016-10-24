@@ -29,9 +29,8 @@ namespace  Aphelion {
         *   Create component items
         */
         public override void Init () {
-            var dispatcher = MessageDispatcher.GetInstance ();
             // Register messages            
-            dispatcher.Register (this, typeof (RunCommandMessage), Run);
+            MessageDispatcher.Register (this, typeof (RunCommandMessage), Run);
         }
 
         /*
@@ -39,10 +38,10 @@ namespace  Aphelion {
         */
         public override async void Install () {
             var thisType = this.get_type ();
-            yield MessageDispatcher.GetInstance ().Send (thisType, typeof (CommandManager), 
+            yield MessageDispatcher.Send (thisType, typeof (CommandManager), 
                                     new RegisterCommandMessage (new CommandInfo (thisType, NAME, DESCRIPTION)));
             // Todo bind from settings
-            yield MessageDispatcher.GetInstance ().Send (thisType, typeof (CommandManager), new BindShortcutMessage (new Shortcut(24, true), thisType));
+            yield MessageDispatcher.Send (thisType, typeof (CommandManager), new BindShortcutMessage (new Shortcut(24, true), thisType));
         }
     }   
 }

@@ -74,7 +74,7 @@ namespace  Aphelion {
             var command = commandRow.UserData as CommandInfo;
             if (command == null) return;
             ShowHideInternal ();
-            MessageDispatcher.GetInstance ().Send.begin (this.get_type (), command.Command, new RunCommandMessage ());                        
+            MessageDispatcher.Send.begin (this.get_type (), command.Command, new RunCommandMessage ());                        
         }    
 
         /*
@@ -117,23 +117,22 @@ namespace  Aphelion {
             _commandEntry.valign = Gtk.Align.START;
             scrolled.valign = Gtk.Align.START; 
 
-            var dispatcher = MessageDispatcher.GetInstance ();
             // Register messages            
-            dispatcher.Register (this, typeof (SwitchVisibilityMessage), ShowHide);
+            MessageDispatcher.Register (this, typeof (SwitchVisibilityMessage), ShowHide);
         }
 
         /*
         *   Install command
         */
         public override async void Install () {
-            yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (MainWindow), new SetOverlayWidgetMessage (_panelBox));
+            yield MessageDispatcher.Send (this.get_type (), typeof (MainWindow), new SetOverlayWidgetMessage (_panelBox));
         }
 
         /*
         *   After install all components
         */
         public override async void AfterInstall () {            
-            var messa = (ReturnCommandsMessage) yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (CommandManager), new GetCommandsMessage ());            
+            var messa = (ReturnCommandsMessage) yield MessageDispatcher.Send (this.get_type (), typeof (CommandManager), new GetCommandsMessage ());            
             foreach (var item in messa.Commands) {
                 _commandList.Append (item.Name, item);
             }

@@ -29,18 +29,17 @@ namespace  Aphelion {
         /*
         *   Create component items
         */
-        public override void Init () {
-            var dispatcher = MessageDispatcher.GetInstance ();
+        public override void Init () {            
             // Register messages            
-            dispatcher.Register (this, typeof (ShowFileDialogMessage), ShowFileDialog);
-            dispatcher.Register (this, typeof (ShowMessageDialogMessage), ShowMessageDialog);
+            MessageDispatcher.Register (this, typeof (ShowFileDialogMessage), ShowFileDialog);
+            MessageDispatcher.Register (this, typeof (ShowMessageDialogMessage), ShowMessageDialog);
         }
 
         /*
         *   Place all visual items to other components
         */
         public override async void Install () {
-             var res = (ReturnWindowMessage) yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (MainWindow), new GetMainWindowMessage ());
+             var res = (ReturnWindowMessage) yield MessageDispatcher.Send (this.get_type (), typeof (MainWindow), new GetMainWindowMessage ());
              _mainWindow = res.MainWindow;
         }
     }

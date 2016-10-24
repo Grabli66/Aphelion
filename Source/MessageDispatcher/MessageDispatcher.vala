@@ -10,29 +10,16 @@ namespace  Aphelion {
     /*
     *   Dispatch all events
     */    
-    public class MessageDispatcher : Object {
-        /*
-        *   EventDispatcher instance
-        */
-        private static MessageDispatcher _instance;
-
+    public class MessageDispatcher : Object {        
         /*
         *   Registered recepients. MessageType -> (Recepient -> RecepientData)
         */
-        private Gee.HashMap<string,  Gee.HashMap<string, RecepientData>?> _registeredMessages;
-
-        /*
-        *   Return instalce
-        */
-        public static inline MessageDispatcher GetInstance () {
-            if (_instance == null) _instance = new MessageDispatcher ();
-            return _instance;
-        }
+        private static Gee.HashMap<string,  Gee.HashMap<string, RecepientData>?> _registeredMessages;        
 
         /*
         *   Log message send
         */
-        private void LogMessage (MessageDirection direction, Type sender, Type destination, Message? messa, int64 delta) {
+        private static void LogMessage (MessageDirection direction, Type sender, Type destination, Message? messa, int64 delta) {
             var snd = sender.name ();
             var dst = destination.name ();
             var mesName = "null";
@@ -44,14 +31,14 @@ namespace  Aphelion {
         /*
         *   Constructor
         */
-        private MessageDispatcher () {
+        static construct {
             _registeredMessages = new Gee.HashMap<string, Gee.HashMap<string, RecepientData?>?> ();
         }
         
         /*
         *   Sent to on message async
         */
-        private async Message? OnMessageInternal (RecepientData recepient, Type sender, Message messa) {            
+        private static async Message? OnMessageInternal (RecepientData recepient, Type sender, Message messa) {            
             var start = get_real_time ();
             var res = yield recepient.OnMessage.Run (sender, messa);
             var delta = get_real_time () - start;
@@ -63,7 +50,7 @@ namespace  Aphelion {
         /*
         *   Internal send
         */
-        private async Message? SendInternal (Type sender, Type destination, Message messa) {            
+        private static async Message? SendInternal (Type sender, Type destination, Message messa) {            
             var dest = destination.name ();
             var mess = messa.get_type ().name ();
 
@@ -86,7 +73,7 @@ namespace  Aphelion {
         /*
         *   Register message
         */
-        public void Register (Object recepient, Type messageType, OnMessageDelegate onMessage) {
+        public static void Register (Object recepient, Type messageType, OnMessageDelegate onMessage) {
             var recType = recepient.get_type ();            
             var addr = recType.name ();
             var mess = messageType.name ();
@@ -107,14 +94,14 @@ namespace  Aphelion {
         /*
         *   Send message to recepient
         */
-        public async Message Send (Type sender, Type destination, Message messa) {                       
+        public static async Message Send (Type sender, Type destination, Message messa) {                       
             return yield SendInternal (sender, destination, messa);                                                            
         }
 
         /*
         *   Send message to all who can recieve it
         */
-        public async BroadcastResponse[] SendBroadcast (Type sender, Message messa) {                       
+        public static async BroadcastResponse[] SendBroadcast (Type sender, Message messa) {                       
             var mess = messa.get_type ().name ();
             var arr = new Gee.ArrayList<BroadcastResponse> ();
 

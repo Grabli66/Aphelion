@@ -25,14 +25,15 @@ namespace  Aphelion {
         *   Constructor
         */
         private ComponentManager() {
-            _components = new Gee.HashMap<string, Component?> ();         
+            _components = new Gee.HashMap<string, Component?> ();
+            // Hack
+            new MessageDispatcher ();         
         }
 
         /*
         *   Init components
         */
         private void Init () {
-            var dispatcher = MessageDispatcher.GetInstance ();
             foreach (var comp in _components.values) {
                 comp.Init ();                
             }

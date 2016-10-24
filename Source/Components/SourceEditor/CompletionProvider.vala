@@ -25,8 +25,8 @@ namespace  Aphelion {
             var column = iter.get_line_offset();			
 
             var text = _parent.Buffer.text;
-            yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (Completion), new RegisterSourceMessage (text));
-            var comp = yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (Completion), 
+            yield MessageDispatcher.Send (this.get_type (), typeof (Completion), new RegisterSourceMessage (text));
+            var comp = yield MessageDispatcher.Send (this.get_type (), typeof (Completion), 
                              new GetCompletionMessage ("", line, column));
                     
             if (comp == null) return;

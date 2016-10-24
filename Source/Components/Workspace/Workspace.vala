@@ -23,16 +23,15 @@ namespace  Aphelion {
         public override void Init () {
             _rootBox = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
 
-            var dispatcher = MessageDispatcher.GetInstance ();
             // Register messages
-            dispatcher.Register (this, typeof (PlaceWidgetMessage), PlaceWidget);
+            MessageDispatcher.Register (this, typeof (PlaceWidgetMessage), PlaceWidget);
         }
 
         /*
         *   Install component
         */
         public override async void Install () {
-            MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (MainWindow), new SetRootWidgetMessage (_rootBox));          
+            MessageDispatcher.Send (this.get_type (), typeof (MainWindow), new SetRootWidgetMessage (_rootBox));          
         }         
     }
 }

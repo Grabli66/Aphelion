@@ -100,10 +100,9 @@ namespace  Aphelion {
         *   Create component items
         */
         public override void Init () {
-            var dispatcher = MessageDispatcher.GetInstance ();
             // Register messages            
-            dispatcher.Register (this, typeof (RegisterSourceMessage), RegisterSource);            
-            dispatcher.Register (this, typeof (GetCompletionMessage), GetCompletion);
+            MessageDispatcher.Register (this, typeof (RegisterSourceMessage), RegisterSource);            
+            MessageDispatcher.Register (this, typeof (GetCompletionMessage), GetCompletion);
         }
     }
 }
