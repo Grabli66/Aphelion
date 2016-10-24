@@ -111,7 +111,7 @@ namespace  Aphelion {
                 _focusedPage = e;                
             });
 
-            page.OnFocusOut.connect ((e) => {
+            page.OnFocusOut.connect ((e) => { 
                 // TODO save page when show dialog
                 //_focusedPage = null;
             });
@@ -129,13 +129,21 @@ namespace  Aphelion {
         /*
         *   Remove page with unsaved content
         */
-        private async void RemoveUnsaved () {
-            var messa = (ReturnMessageDialogResultMessage) yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (Dialogs), new ShowMessageDialogMessage ());
+        private async void RemoveUnsaved (SourcePage page) {
+            var messa = (ReturnMessageDialogResultMessage) yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (Dialogs), 
+                         new ShowMessageDialogMessage ("Do you want to save the changes?").
+                         AddButton ("_Don't save", MessageDialogResult.CLOSE).                         
+                         AddButton ("_Cancel", MessageDialogResult.CANCEL).
+                         AddButton ("_Save", MessageDialogResult.OK));
             switch (messa.Result) {
                 case MessageDialogResult.OK:                    
                     yield MessageDispatcher.GetInstance ().Send (this.get_type (), typeof (SaveDocumentCommand), new RunCommandMessage ());                    
                     break;
                 case MessageDialogResult.CANCEL:
+                    break;
+                case MessageDialogResult.CLOSE:
+                    _pages.remove (page.FilePath);
+                    page.RemovePage ();
                     break;
             default:
                 break;
@@ -147,10 +155,8 @@ namespace  Aphelion {
         */
         private void RemovePage (SourcePage page) {
             // Check for unsaved
-            if (page.Changed) {                 
-                // Send message for dialog
-                // Save, not save, cancel
-                RemoveUnsaved.begin ();
+            if (page.Changed) {                                 
+                RemoveUnsaved.begin (page);
             } else {
                 _pages.remove (page.FilePath);
                 page.RemovePage ();

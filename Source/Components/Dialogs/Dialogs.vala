@@ -22,7 +22,7 @@ namespace  Aphelion {
         */
         private Message? ShowMessageDialog (Type sender, Message data) {
             var messa = (ShowMessageDialogMessage) data;
-            var dialog = new MessageDialog (_mainWindow);
+            var dialog = new MessageDialog (_mainWindow, messa);
             return dialog.ShowWithResult ();
         }     
          

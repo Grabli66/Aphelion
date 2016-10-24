@@ -6,13 +6,13 @@ namespace  Aphelion {
         /*
         *   Result from dialog
         */
-        public MessageDialogResult Result { get; private set; }
+        public int Result { get; private set; }
 
         /*
         *   Constructor
         */
-        public ReturnMessageDialogResultMessage (MessageDialogResult result) {
-            this.Result = result;            
+        public ReturnMessageDialogResultMessage (int result) {
+            this.Result = result;
         }
 
         /*
