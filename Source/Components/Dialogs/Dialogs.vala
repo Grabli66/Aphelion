@@ -13,7 +13,7 @@ namespace  Aphelion {
         */
         private Message? ShowFileDialog (Type sender, Message data) {
             var messa = (ShowFileDialogMessage) data;
-            var dialog = new FileDialog (_mainWindow, messa.Operation);
+            var dialog = new FileDialog (_mainWindow, messa);
             return dialog.ShowWithResult ();
         }    
 

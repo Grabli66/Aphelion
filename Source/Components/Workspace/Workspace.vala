@@ -8,6 +8,18 @@ namespace  Aphelion {
         */
         private Gtk.Box _rootBox;
 
+        private Gtk.Box _topBox;
+
+        private Gtk.Box _centerLineBox;
+
+        private Gtk.Box _leftBox;
+
+        private Gtk.Box _centerBox;
+
+        private Gtk.Box _rightBox;
+
+        private Gtk.Box _bottomBox;
+
         /*
         *   Place widget to some place 
         */

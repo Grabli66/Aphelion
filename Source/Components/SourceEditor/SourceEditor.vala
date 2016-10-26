@@ -200,7 +200,7 @@ namespace  Aphelion {
         *   Install component
         */
         public override async void Install () {
-            MessageDispatcher.Send (this.get_type (), typeof (Workspace), new PlaceWidgetMessage (_notebook));
+            MessageDispatcher.Send (this.get_type (), typeof (Workspace), new PlaceWidgetMessage (_notebook, WorkspacePlace.CENTER));
         }        
     }
 }

@@ -103,6 +103,7 @@ namespace  Aphelion {
             Add (new CloseCommand ());
             Add (new QuitCommand ());
             Add (new ShowHideCommandPanelCommand ());
+            Add (new OpenProjectCommand ());
 
             Init ();
             
