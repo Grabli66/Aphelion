@@ -4,28 +4,32 @@ namespace  Aphelion {
     */
     public class Workspace : Component { 
         /*
-        *   Root widget
+        *   Root paned widget
         */
-        private Gtk.Box _rootBox;
+        private Gtk.Paned _rootPaned;                
 
-        private Gtk.Box _topBox;
-
-        private Gtk.Box _centerLineBox;
-
-        private Gtk.Box _leftBox;
-
-        private Gtk.Box _centerBox;
-
-        private Gtk.Box _rightBox;
-
-        private Gtk.Box _bottomBox;
+        /*
+        *   Center paned widget
+        */
+        private Gtk.Paned _centerPaned;        
 
         /*
         *   Place widget to some place 
         */
         private Message? PlaceWidget (Type sender, Message data) {
-            var message = (PlaceWidgetMessage) data;
-            _rootBox.pack_start (message.Widget);
+            var messa = (PlaceWidgetMessage) data;
+
+            switch (messa.Place) {
+                case WorkspacePlace.CENTER:
+                    _rootPaned.add2 (messa.Widget);
+                    break;
+                case WorkspacePlace.LEFT:
+                    _rootPaned.add1 (messa.Widget);
+                    break;
+            default:
+                break;
+            }
+            messa.Widget.show_all ();        
             return null;
         }
 
@@ -33,7 +37,7 @@ namespace  Aphelion {
         *   Create component items
         */
         public override void Init () {
-            _rootBox = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
+            _rootPaned = new Gtk.Paned (Gtk.Orientation.HORIZONTAL);
 
             // Register messages
             MessageDispatcher.Register (this, typeof (PlaceWidgetMessage), PlaceWidget);
@@ -43,7 +47,7 @@ namespace  Aphelion {
         *   Install component
         */
         public override async void Install () {
-            MessageDispatcher.Send (this.get_type (), typeof (MainWindow), new SetRootWidgetMessage (_rootBox));          
+            MessageDispatcher.Send (this.get_type (), typeof (MainWindow), new SetRootWidgetMessage (_rootPaned));          
         }         
     }
 }

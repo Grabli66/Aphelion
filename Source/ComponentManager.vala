@@ -42,7 +42,7 @@ namespace  Aphelion {
         /*
         *   Add component
         */
-        public void Add (Component component) {
+        private void Add (Component component) {
             var name = component.get_type ().name ();
             _components[name] = component;
         }
@@ -50,7 +50,7 @@ namespace  Aphelion {
         /*
         *   Get component by Id
         */
-        public Component Get (Type type) throws AphelionErrors.Common {
+        private Component Get (Type type) throws AphelionErrors.Common {
             var name = type.name ();
             var component = _components[name];
             if (component == null) throw new AphelionErrors.Common (@"Component $name not found");
@@ -60,7 +60,7 @@ namespace  Aphelion {
         /*
         *   Install component
         */
-        public void Install (Type type) {            
+        private void Install (Type type) {            
             var component = Get (type);
             component.Install ();
         }
@@ -68,7 +68,7 @@ namespace  Aphelion {
         /*
         *   Install all known components
         */
-        public void InstallAll () {
+        private void InstallAll () {
             foreach (var comp in _components.values) {
                 comp.Install ();
             }
@@ -88,6 +88,7 @@ namespace  Aphelion {
             Add (new Header ());
             Add (new Workspace ());
             Add (new SourceEditor ());
+            Add (new ProjectList ());
             Add (new CommandManager ());
             Add (new CommandPanel ());
             Add (new Dialogs ());
@@ -106,9 +107,7 @@ namespace  Aphelion {
             Add (new OpenProjectCommand ());
 
             Init ();
-            
-            var scene = Get (typeof (SceneManager)) as SceneManager;            
-            scene.Install ();
+            InstallAll ();            
         }
     }
 }

@@ -2,28 +2,13 @@ namespace  Aphelion {
     /*
     *   Standard scene manager
     */
-    public class SceneManager : Component { 
-        /*
-        *   Create component items
-        */
-        public void Init () {
-            
-        }
-
+    public class SceneManager : Component {         
         /*
         *   Install component
         */
-        public void Install () {
-            var manager = ComponentManager.GetInstance ();
-            manager.InstallAll ();
-
-            /*manager.Install (typeof (MainWindow));
-            manager.Install (typeof (Header));
-            manager.Install (typeof (Workspace));
-            manager.Install (typeof (SourceEditor));
-            manager.Install (typeof (CommandManager));
-            manager.Install (typeof (FileDialog));
-            manager.Install (typeof (FileOperations));*/
+        public override async void Install () {
+            /*var manager = ComponentManager.GetInstance ();
+            manager.InstallAll ();*/
         }
     }
 }

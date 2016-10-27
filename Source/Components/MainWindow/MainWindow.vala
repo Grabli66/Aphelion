@@ -50,6 +50,25 @@ namespace  Aphelion {
             padding: 5px 5px 5px 10px;
         }
 
+        .project-list {
+            background: rgb (37,37,38);
+        }
+
+        .panel-header  {
+            background: rgb (37,37,38);
+            color: #fff;
+        }
+
+        .project-list  row:hover {
+            background: rgba (40,40,40, 1);
+            color: #fff;
+        }
+
+        .project-list  row:selected {
+            background: rgba (38,80,120, 1);
+            color: #fff;
+        }
+
         """;
 
         /*
